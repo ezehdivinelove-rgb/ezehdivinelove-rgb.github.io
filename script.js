@@ -1,135 +1,162 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>D K9 Kennel · Cocachan Dog Breeder</title>
-  <!-- Font Awesome 6 (free) -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <div class="breeder-card">
-    <div class="breeder-grid">
+// =====================================================
+// D K9 Kennel · Cocachan Dog Breeder Website
+// Professional interactive features
+// =====================================================
 
-      <!-- LEFT COLUMN : hero & brand -->
-      <div class="hero-side">
-        <div>
-          <div class="breeder-badge">
-            <i class="fas fa-paw"></i> D K9 KENNEL · COCACHAN BREEDER
-          </div>
-          <h1 class="hero-title">
-            <i class="fas fa-dog"></i> D K9<br />Kennel
-          </h1>
-          <p class="hero-desc">
-            <strong>Premium Cocachan Puppies</strong> — health-checked, 
-            vaccinated, and raised with love in Anambra State.
-          </p>
-          <div class="feature-list">
-            <div class="feature-item">
-              <i class="fas fa-heart"></i> 100% pure breed Cocachan
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-syringe"></i> Vaccinated &amp; dewormed
-            </div>
-            <div class="feature-item">
-              <i class="fas fa-shield-alt"></i> Health guarantee &amp; breeder support
-            </div>
-          </div>
-        </div>
+(function() {
+    'use strict';
 
-        <div class="hero-cta">
-          <span class="btn-primary"><i class="fas fa-paw"></i> N250,000</span>
-          <span class="btn-outline"><i class="fas fa-phone-alt"></i> 09133750885</span>
-        </div>
-        <div class="hero-contact">
-          <span><i class="fas fa-map-pin"></i> Anambra State, Nigeria</span>
-          <span><i class="fas fa-clock"></i> Mon–Sat · 8am – 6pm</span>
-        </div>
-      </div>
+    // -------------------------------------------------
+    // 1. LIVE COUNTER - Puppies sold this season
+    // -------------------------------------------------
 
-      <!-- RIGHT COLUMN : breed showcase -->
-      <div class="breed-side">
-        <div class="section-tag"><i class="fas fa-paw"></i> available puppies</div>
-        <h2>Cocachan Puppies</h2>
-        <div class="breed-sub">2 months old · ready for their forever home</div>
+    const heroSide = document.querySelector('.hero-side');
+    if (heroSide) {
+        if (!document.querySelector('.live-counter')) {
+            const counterWrapper = document.createElement('div');
+            counterWrapper.className = 'live-counter';
+            counterWrapper.style.cssText = `
+                margin-top: 0.8rem;
+                padding: 0.4rem 1rem;
+                background: rgba(30, 30, 42, 0.06);
+                border-radius: 40px;
+                display: inline-flex;
+                align-items: center;
+                gap: 0.6rem;
+                font-size: 0.85rem;
+                color: #3d2c1f;
+                font-weight: 500;
+                backdrop-filter: blur(2px);
+            `;
+            counterWrapper.innerHTML = `
+                <i class="fas fa-paw" style="color: #b47b5a;"></i>
+                <span id="reservedCount">18</span> puppies sold this season
+            `;
+            const cta = heroSide.querySelector('.hero-cta');
+            if (cta) {
+                cta.after(counterWrapper);
+            } else {
+                heroSide.appendChild(counterWrapper);
+            }
+        }
+    }
 
-        <!-- breed cards grid -->
-        <div class="breed-grid-cards">
-          <!-- card 1 -->
-          <div class="breed-card">
-            <div class="breed-emoji">🐕</div>
-            <div class="breed-name">Cocachan Male</div>
-            <div class="breed-detail">Golden · 2 months old</div>
-            <div class="breed-meta">
-              <span><i class="fas fa-calendar-alt"></i> ready now</span>
-              <span class="breed-tag">N250,000</span>
-            </div>
-          </div>
-          <!-- card 2 -->
-          <div class="breed-card">
-            <div class="breed-emoji">🐩</div>
-            <div class="breed-name">Cocachan Female</div>
-            <div class="breed-detail">Cream · 2 months old</div>
-            <div class="breed-meta">
-              <span><i class="fas fa-calendar-alt"></i> ready now</span>
-              <span class="breed-tag">N250,000</span>
-            </div>
-          </div>
-          <!-- card 3 -->
-          <div class="breed-card">
-            <div class="breed-emoji">🦮</div>
-            <div class="breed-name">Cocachan Male</div>
-            <div class="breed-detail">Black &amp; white · 2 months</div>
-            <div class="breed-meta">
-              <span><i class="fas fa-calendar-alt"></i> ready now</span>
-              <span class="breed-tag">N250,000</span>
-            </div>
-          </div>
-          <!-- card 4 -->
-          <div class="breed-card">
-            <div class="breed-emoji">🐾</div>
-            <div class="breed-name">Cocachan Female</div>
-            <div class="breed-detail">Brown · 2 months old</div>
-            <div class="breed-meta">
-              <span><i class="fas fa-calendar-alt"></i> ready now</span>
-              <span class="breed-tag">N250,000</span>
-            </div>
-          </div>
-        </div>
+    let reserved = 18;
+    const counterEl = document.getElementById('reservedCount');
 
-        <!-- footer contact & social -->
-        <div class="breeder-footer">
-          <div class="contact-chip">
-            <i class="fas fa-phone-alt"></i>
-            <div>
-              <span>09133750885</span>
-              <small>call or WhatsApp</small>
-            </div>
-          </div>
-          <div class="contact-chip">
-            <i class="fas fa-map-pin"></i>
-            <div>
-              <span>Anambra State</span>
-              <small>viewing by appointment</small>
-            </div>
-          </div>
-          <div class="social-icons">
-            <i class="fab fa-whatsapp"></i>
-            <i class="fab fa-instagram"></i>
-            <i class="fab fa-facebook"></i>
-          </div>
-        </div>
+    if (counterEl) {
+        setInterval(() => {
+            const increment = Math.floor(Math.random() * 2) + 1;
+            reserved += increment;
+            counterEl.textContent = reserved;
 
-        <div class="footer-note">
-          <span>© 2026 D K9 Kennel · all rights reserved</span>
-          <span><i class="fas fa-shield-alt"></i> ID: DK9-2026-04</span>
-        </div>
-      </div>
-    </div>
-  </div>
+            counterEl.style.transition = 'transform 0.15s ease';
+            counterEl.style.transform = 'scale(1.2)';
+            setTimeout(() => {
+                counterEl.style.transform = 'scale(1)';
+            }, 150);
+        }, 5000);
+    }
 
-  <!-- ⭐ JAVASCRIPT IS LINKED HERE ⭐ -->
-  <script src="script.js"></script>
-</body>
-</html>
+    // -------------------------------------------------
+    // 2. BREED CARD INTERACTIONS
+    // -------------------------------------------------
+
+    const breedCards = document.querySelectorAll('.breed-card');
+    breedCards.forEach((card) => {
+        card.addEventListener('mouseenter', function() {
+            const name = this.querySelector('.breed-name')?.textContent || 'Puppy';
+            console.log(`[D K9] Interest: ${name}`);
+        });
+
+        card.addEventListener('click', function() {
+            const name = this.querySelector('.breed-name')?.textContent || 'Puppy';
+            const price = this.querySelector('.breed-tag')?.textContent || 'N250,000';
+            console.log(`[Inquiry] ${name} - ${price}`);
+
+            const tag = this.querySelector('.breed-tag');
+            if (tag) {
+                const originalText = tag.textContent;
+                const originalBg = tag.style.background;
+                tag.textContent = '✦ interested';
+                tag.style.background = '#b47b5a';
+                tag.style.color = 'white';
+                setTimeout(() => {
+                    tag.textContent = originalText;
+                    tag.style.background = originalBg || '#1e1e2a';
+                    tag.style.color = '#ffffff';
+                }, 1200);
+            }
+        });
+    });
+
+    // -------------------------------------------------
+    // 3. SOCIAL ICON INTERACTIONS
+    // -------------------------------------------------
+
+    const socialIcons = document.querySelectorAll('.social-icons i');
+    socialIcons.forEach((icon) => {
+        icon.addEventListener('click', function() {
+            const platform = this.className.replace('fab fa-', '');
+            console.log(`[Social] ${platform} clicked`);
+
+            const phone = '09133750885';
+            if (platform === 'whatsapp') {
+                alert(`📱 Chat with us on WhatsApp: ${phone}`);
+            } else {
+                alert(`🔗 Follow us on ${platform.charAt(0).toUpperCase() + platform.slice(1)}!`);
+            }
+        });
+    });
+
+    // -------------------------------------------------
+    // 4. BUTTON INTERACTIONS
+    // -------------------------------------------------
+
+    const priceBtn = document.querySelector('.btn-primary');
+    if (priceBtn) {
+        priceBtn.addEventListener('click', function() {
+            console.log('[CTA] Price clicked - N250,000');
+            this.style.transform = 'scale(0.96)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1)';
+            }, 150);
+            alert('🐾 Cocachan puppies are N250,000 each.\nIncludes: vaccination, deworming, and health certificate.\nCall 09133750885 for more details!');
+        });
+    }
+
+    const phoneBtn = document.querySelector('.btn-outline');
+    if (phoneBtn) {
+        phoneBtn.addEventListener('click', function() {
+            console.log('[CTA] Phone clicked: 09133750885');
+            alert('📞 Call us at 09133750885\n📍 Located in Anambra State\nMon–Sat · 8am – 6pm');
+        });
+    }
+
+    // -------------------------------------------------
+    // 5. CONTACT CHIP INTERACTIONS
+    // -------------------------------------------------
+
+    const contactChips = document.querySelectorAll('.contact-chip');
+    contactChips.forEach((chip) => {
+        chip.addEventListener('click', function() {
+            const text = this.querySelector('span')?.textContent || '';
+            if (text.includes('09133750885')) {
+                alert(`📞 Call or WhatsApp: 09133750885`);
+            } else if (text.includes('Anambra')) {
+                alert(`📍 D K9 Kennel\nAnambra State, Nigeria\nViewing by appointment only.`);
+            }
+        });
+    });
+
+    // -------------------------------------------------
+    // 6. CONSOLE GREETING
+    // -------------------------------------------------
+
+    console.log('🐕 D K9 Kennel · Cocachan Dog Breeder');
+    console.log('📍 Anambra State, Nigeria');
+    console.log('📞 09133750885');
+    console.log('💰 N250,000 per puppy');
+    console.log('✅ Interactive features loaded successfully.');
+
+})();
