@@ -1,77 +1,135 @@
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-            target.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start'
-            });
-        }
-    });
-});
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D K9 Kennel · Cocachan Dog Breeder</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="breeder-card">
+    <div class="breeder-grid">
 
-// Contact form submission
-document.querySelector('.contact-form').addEventListener('submit', function(e) {
-    e.preventDefault();
-    alert('Thank you for your message! We will get back to you soon. 🐕');
-    this.reset();
-});
+      <!-- LEFT COLUMN : hero & brand -->
+      <div class="hero-side">
+        <div>
+          <div class="breeder-badge">
+            <i class="fas fa-paw"></i> D K9 KENNEL · COCACHAN BREEDER
+          </div>
+          <h1 class="hero-title">
+            <i class="fas fa-dog"></i> D K9<br />Kennel
+          </h1>
+          <p class="hero-desc">
+            <strong>Premium Cocachan Puppies</strong> — health-checked, 
+            vaccinated, and raised with love in Anambra State.
+          </p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <i class="fas fa-heart"></i> 100% pure breed Cocachan
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-syringe"></i> Vaccinated &amp; dewormed
+            </div>
+            <div class="feature-item">
+              <i class="fas fa-shield-alt"></i> Health guarantee &amp; breeder support
+            </div>
+          </div>
+        </div>
 
-// Inquire button functionality
-document.querySelectorAll('.inquire-btn').forEach(button => {
-    button.addEventListener('click', function(e) {
-        const puppyName = this.parentElement.querySelector('h3').textContent;
-        alert(`Thank you for your interest in ${puppyName}! Please contact us for more information. Divine is excited to meet you! 🐕✨`);
-    });
-});
+        <div class="hero-cta">
+          <span class="btn-primary"><i class="fas fa-paw"></i> N250,000</span>
+          <span class="btn-outline"><i class="fas fa-phone-alt"></i> 09133750885</span>
+        </div>
+        <div class="hero-contact">
+          <span><i class="fas fa-map-pin"></i> Anambra State, Nigeria</span>
+          <span><i class="fas fa-clock"></i> Mon–Sat · 8am – 6pm</span>
+        </div>
+      </div>
 
-// CTA button scroll to puppies
-document.querySelector('.cta-btn').addEventListener('click', function() {
-    document.getElementById('puppies').scrollIntoView({ behavior: 'smooth' });
-});
+      <!-- RIGHT COLUMN : breed showcase -->
+      <div class="breed-side">
+        <div class="section-tag"><i class="fas fa-paw"></i> available puppies</div>
+        <h2>Cocachan Puppies</h2>
+        <div class="breed-sub">2 months old · ready for their forever home</div>
 
-// Add scroll effect to navbar
-window.addEventListener('scroll', function() {
-    const navbar = document.querySelector('.navbar');
-    if (window.scrollY > 50) {
-        navbar.style.boxShadow = '0 5px 15px rgba(0, 0, 0, 0.2)';
-    } else {
-        navbar.style.boxShadow = '0 2px 5px rgba(0, 0, 0, 0.1)';
-    }
-});
+        <!-- breed cards grid -->
+        <div class="breed-grid-cards">
+          <!-- card 1 -->
+          <div class="breed-card">
+            <div class="breed-emoji">🐕</div>
+            <div class="breed-name">Cocachan Male</div>
+            <div class="breed-detail">Golden · 2 months old</div>
+            <div class="breed-meta">
+              <span><i class="fas fa-calendar-alt"></i> ready now</span>
+              <span class="breed-tag">N250,000</span>
+            </div>
+          </div>
+          <!-- card 2 -->
+          <div class="breed-card">
+            <div class="breed-emoji">🐩</div>
+            <div class="breed-name">Cocachan Female</div>
+            <div class="breed-detail">Cream · 2 months old</div>
+            <div class="breed-meta">
+              <span><i class="fas fa-calendar-alt"></i> ready now</span>
+              <span class="breed-tag">N250,000</span>
+            </div>
+          </div>
+          <!-- card 3 -->
+          <div class="breed-card">
+            <div class="breed-emoji">🦮</div>
+            <div class="breed-name">Cocachan Male</div>
+            <div class="breed-detail">Black &amp; white · 2 months</div>
+            <div class="breed-meta">
+              <span><i class="fas fa-calendar-alt"></i> ready now</span>
+              <span class="breed-tag">N250,000</span>
+            </div>
+          </div>
+          <!-- card 4 -->
+          <div class="breed-card">
+            <div class="breed-emoji">🐾</div>
+            <div class="breed-name">Cocachan Female</div>
+            <div class="breed-detail">Brown · 2 months old</div>
+            <div class="breed-meta">
+              <span><i class="fas fa-calendar-alt"></i> ready now</span>
+              <span class="breed-tag">N250,000</span>
+            </div>
+          </div>
+        </div>
 
-// Divine mascot interaction
-document.querySelector('.divine-svg').addEventListener('click', function() {
-    alert('Hi! I\'m Divine! 🐕✨ Welcome to our dog breeding family! Pet me for good luck!');
-    this.style.transform = 'scale(1.1) rotate(5deg)';
-    setTimeout(() => {
-        this.style.transform = '';
-    }, 500);
-});
+        <!-- footer contact & social -->
+        <div class="breeder-footer">
+          <div class="contact-chip">
+            <i class="fas fa-phone-alt"></i>
+            <div>
+              <span>09133750885</span>
+              <small>call or WhatsApp</small>
+            </div>
+          </div>
+          <div class="contact-chip">
+            <i class="fas fa-map-pin"></i>
+            <div>
+              <span>Anambra State</span>
+              <small>viewing by appointment</small>
+            </div>
+          </div>
+          <div class="social-icons">
+            <i class="fab fa-whatsapp"></i>
+            <i class="fab fa-instagram"></i>
+            <i class="fab fa-facebook"></i>
+          </div>
+        </div>
 
-// Fade in elements on scroll
-const observerOptions = {
-    threshold: 0.1,
-    rootMargin: '0px 0px -50px 0px'
-};
+        <div class="footer-note">
+          <span>© 2026 D K9 Kennel · all rights reserved</span>
+          <span><i class="fas fa-shield-alt"></i> ID: DK9-2026-04</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
-const observer = new IntersectionObserver(function(entries) {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            entry.target.style.opacity = '1';
-            entry.target.style.transform = 'translateY(0)';
-        }
-    });
-}, observerOptions);
-
-// Observe breed cards and puppy cards
-document.querySelectorAll('.breed-card, .puppy-card, .feature').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(20px)';
-    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-    observer.observe(el);
-});
-
-console.log('🐕 Divine\'s Dog Breeder Website loaded successfully!');
+  <!-- ⭐ JAVASCRIPT IS LINKED HERE ⭐ -->
+  <script src="script.js"></script>
+</body>
+</html>
