@@ -1,444 +1,384 @@
+/* ----- RESET & BASE ----- */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    --primary-color: #8B4513;
-    --secondary-color: #D2691E;
-    --light-bg: #FFF8DC;
-    --dark-text: #333;
-    --border-radius: 10px;
-    --divine-gold: #FFD700;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1.6;
-    color: var(--dark-text);
-    background-color: #f9f9f9;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: #faf7f2;
+  color: #1e1e2a;
+  line-height: 1.5;
+  padding: 2rem 1.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
 }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 20px;
+/* main breeder card */
+.breeder-card {
+  max-width: 1280px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 2.8rem;
+  box-shadow: 0 30px 60px -20px rgba(0, 0, 0, 0.25);
+  overflow: hidden;
 }
 
-/* Navigation */
-.navbar {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 1rem 0;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+/* ===== LAYOUT: two columns ===== */
+.breeder-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
 }
 
-.navbar .container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+/* ===== LEFT: hero / image + intro ===== */
+.hero-side {
+  background: linear-gradient(145deg, #f6efe7 0%, #ede4d8 100%);
+  padding: 2.8rem 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100%;
 }
 
-.logo {
-    font-size: 1.8rem;
-    font-weight: bold;
+.breeder-badge {
+  display: inline-block;
+  background: #e6d5c0;
+  color: #3d2c1f;
+  font-weight: 600;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  padding: 0.4rem 1.2rem;
+  border-radius: 40px;
+  text-transform: uppercase;
+  margin-bottom: 1.8rem;
+  align-self: flex-start;
 }
 
-.nav-links {
-    display: flex;
-    list-style: none;
-    gap: 2rem;
+.breeder-badge i {
+  margin-right: 6px;
 }
 
-.nav-links a {
-    color: white;
-    text-decoration: none;
-    transition: color 0.3s;
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #231f1b;
+  margin-bottom: 1rem;
 }
 
-.nav-links a:hover {
-    color: var(--divine-gold);
+.hero-title i {
+  color: #b47b5a;
+  margin-right: 0.2rem;
 }
 
-/* Hero Section */
-.hero {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    color: white;
-    padding: 100px 0;
-    text-align: center;
+.hero-desc {
+  font-size: 1.05rem;
+  color: #3f352b;
+  max-width: 90%;
+  margin-bottom: 2rem;
+  font-weight: 400;
 }
 
-.hero h1 {
-    font-size: 3rem;
-    margin-bottom: 1rem;
-    animation: slideDown 0.8s ease-out;
+.hero-desc strong {
+  color: #7a5a40;
 }
 
-.hero p {
-    font-size: 1.5rem;
-    margin-bottom: 2rem;
+.feature-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 2.5rem;
 }
 
-.cta-btn {
-    background-color: var(--light-bg);
-    color: var(--primary-color);
-    padding: 12px 30px;
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 1.1rem;
-    font-weight: bold;
-    cursor: pointer;
-    transition: transform 0.3s, box-shadow 0.3s;
+.feature-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1rem;
+  color: #2b241e;
 }
 
-.cta-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+.feature-item i {
+  color: #b47b5a;
+  width: 1.6rem;
+  font-size: 1.2rem;
 }
 
-/* Divine Section */
-.divine-section {
-    padding: 60px 0;
-    background: linear-gradient(135deg, #FFF8DC 0%, #FFE4B5 100%);
+.hero-cta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 0.5rem;
 }
 
-.divine-section h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 3rem;
-    color: var(--primary-color);
-    animation: glow 2s ease-in-out infinite;
+.btn-primary {
+  background: #1e1e2a;
+  border: none;
+  padding: 0.9rem 2.5rem;
+  border-radius: 60px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  letter-spacing: 0.3px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease;
 }
 
-@keyframes glow {
-    0%, 100% {
-        text-shadow: 0 0 5px transparent;
-    }
-    50% {
-        text-shadow: 0 0 20px rgba(255, 215, 0, 0.6);
-    }
+.btn-primary:hover {
+  background: #2d2d3f;
+  transform: translateY(-2px);
 }
 
-.divine-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    align-items: center;
+.btn-primary i {
+  font-size: 1rem;
 }
 
-.divine-cartoon {
-    text-align: center;
+.btn-outline {
+  background: transparent;
+  border: 1.5px solid #2b241e;
+  padding: 0.9rem 2.2rem;
+  border-radius: 60px;
+  color: #1e1e2a;
+  font-weight: 600;
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.divine-svg {
-    width: 100%;
-    max-width: 300px;
-    height: auto;
-    animation: bounce 3s ease-in-out infinite;
-    filter: drop-shadow(0 10px 20px rgba(139, 69, 19, 0.3));
+.btn-outline:hover {
+  background: #2b241e;
+  color: white;
 }
 
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-20px);
-    }
+.hero-contact {
+  margin-top: 1rem;
+  font-size: 0.85rem;
+  color: #6b5f52;
+  display: flex;
+  gap: 1.5rem;
 }
 
-.divine-info h3 {
-    font-size: 2.5rem;
-    color: var(--primary-color);
-    margin-bottom: 1rem;
+.hero-contact i {
+  margin-right: 4px;
 }
 
-.divine-info p {
-    font-size: 1.1rem;
-    margin-bottom: 1.5rem;
-    color: var(--dark-text);
+/* ===== RIGHT: breed showcase ===== */
+.breed-side {
+  padding: 2.8rem 2.5rem;
+  background: #ffffff;
 }
 
-.divine-traits {
-    list-style: none;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
+.section-tag {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #9a8a7a;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
 }
 
-.divine-traits li {
-    background-color: white;
-    padding: 1rem;
-    border-radius: var(--border-radius);
-    border-left: 4px solid var(--divine-gold);
-    font-weight: 600;
-    color: var(--primary-color);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.breed-side h2 {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #1f1b17;
+  margin-bottom: 0.3rem;
 }
 
-/* Breeds Section */
-.breeds {
-    padding: 60px 0;
-    background-color: white;
+.breed-sub {
+  color: #5f5347;
+  margin-bottom: 1.8rem;
+  font-size: 0.95rem;
 }
 
-.breeds h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 3rem;
-    color: var(--primary-color);
-}
-
-.breed-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
+/* breed cards */
+.breed-grid-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2.2rem;
 }
 
 .breed-card {
-    background-color: var(--light-bg);
-    padding: 2rem;
-    border-radius: var(--border-radius);
-    text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #f8f4ef;
+  border-radius: 1.8rem;
+  padding: 1.5rem 1.2rem 1.2rem;
+  transition: all 0.15s;
+  border: 1px solid transparent;
+  cursor: pointer;
 }
 
 .breed-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+  border-color: #ddd0c2;
+  background: #fcf9f5;
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.05);
 }
 
 .breed-emoji {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+  font-size: 2.6rem;
+  line-height: 1;
+  margin-bottom: 0.2rem;
 }
 
-.breed-card h3 {
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
+.breed-name {
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #1f1b17;
+  letter-spacing: -0.2px;
 }
 
-/* Puppies Section */
-.puppies {
-    padding: 60px 0;
-    background-color: var(--light-bg);
+.breed-detail {
+  font-size: 0.85rem;
+  color: #6b5f52;
+  margin: 0.2rem 0 0.6rem;
 }
 
-.puppies h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 3rem;
-    color: var(--primary-color);
+.breed-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  color: #4c4035;
 }
 
-.puppies-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 2rem;
+.breed-meta i {
+  color: #b47b5a;
+  margin-right: 0.2rem;
 }
 
-.puppy-card {
-    background-color: white;
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    text-align: center;
-    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s;
+.breed-tag {
+  background: #1e1e2a;
+  padding: 0.2rem 0.9rem;
+  border-radius: 40px;
+  font-weight: 700;
+  font-size: 0.75rem;
+  letter-spacing: 0.3px;
+  color: #ffffff;
 }
 
-.puppy-card:hover {
-    transform: scale(1.05);
+/* footer */
+.breeder-footer {
+  border-top: 1px solid #ece3da;
+  padding-top: 1.8rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.2rem;
 }
 
-.puppy-image {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+.contact-chip {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.puppy-card h3 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
+.contact-chip:hover {
+  opacity: 0.7;
 }
 
-.puppy-card p {
-    margin: 0.5rem 0;
-    font-size: 0.95rem;
+.contact-chip i {
+  color: #7a5a40;
+  font-size: 1.2rem;
+  width: 2.2rem;
+  text-align: center;
 }
 
-.inquire-btn {
-    background-color: var(--secondary-color);
-    color: white;
-    padding: 10px 20px;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background-color 0.3s;
+.contact-chip span {
+  font-weight: 600;
+  color: #1f1b17;
 }
 
-.inquire-btn:hover {
-    background-color: var(--primary-color);
+.contact-chip small {
+  display: block;
+  font-weight: 400;
+  color: #6b5f52;
+  font-size: 0.8rem;
 }
 
-/* About Section */
-.about {
-    padding: 60px 0;
-    background-color: white;
+.social-icons {
+  display: flex;
+  gap: 1rem;
+  color: #5f5347;
 }
 
-.about h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: var(--primary-color);
+.social-icons i {
+  font-size: 1.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.about > .container > p {
-    text-align: center;
-    font-size: 1.1rem;
-    margin-bottom: 3rem;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
+.social-icons i:hover {
+  color: #1e1e2a;
+  transform: scale(1.1);
 }
 
-.about-features {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2rem;
+.footer-note {
+  margin-top: 1.2rem;
+  font-size: 0.7rem;
+  color: #9a8a7a;
+  letter-spacing: 0.2px;
+  border-top: 1px solid #ece3da;
+  padding-top: 1rem;
+  display: flex;
+  justify-content: space-between;
 }
 
-.feature {
-    background-color: var(--light-bg);
-    padding: 2rem;
-    border-radius: var(--border-radius);
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+/* ===== responsive ===== */
+@media (max-width: 900px) {
+  .breeder-grid {
+    grid-template-columns: 1fr;
+  }
+  .hero-side {
+    padding: 2rem 1.8rem;
+  }
+  .breed-side {
+    padding: 2rem 1.8rem;
+  }
+  .hero-title {
+    font-size: 2.2rem;
+  }
+  .hero-desc {
+    max-width: 100%;
+  }
+  .breed-grid-cards {
+    grid-template-columns: 1fr 1fr;
+  }
 }
 
-.feature h3 {
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-}
-
-/* Contact Section */
-.contact {
-    padding: 60px 0;
-    background-color: var(--light-bg);
-}
-
-.contact h2 {
-    text-align: center;
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-    color: var(--primary-color);
-}
-
-.contact-form {
-    max-width: 500px;
-    margin: 0 auto 2rem;
-    display: flex;
+@media (max-width: 500px) {
+  .breed-grid-cards {
+    grid-template-columns: 1fr;
+  }
+  .breeder-footer {
     flex-direction: column;
-    gap: 1rem;
-}
-
-.contact-form input,
-.contact-form textarea {
-    padding: 12px;
-    border: 1px solid var(--secondary-color);
-    border-radius: var(--border-radius);
-    font-family: inherit;
-}
-
-.contact-form textarea {
-    resize: vertical;
-}
-
-.submit-btn {
-    background-color: var(--primary-color);
-    color: white;
-    padding: 12px;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: bold;
-    transition: background-color 0.3s;
-}
-
-.submit-btn:hover {
-    background-color: var(--secondary-color);
-}
-
-.contact-info {
-    text-align: center;
-    margin-top: 2rem;
-}
-
-.contact-info p {
-    margin: 0.5rem 0;
-    font-size: 1.1rem;
-}
-
-/* Footer */
-.footer {
-    background-color: var(--primary-color);
-    color: white;
-    text-align: center;
-    padding: 2rem 0;
-}
-
-/* Animations */
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .hero p {
-        font-size: 1.2rem;
-    }
-
-    .nav-links {
-        gap: 1rem;
-        font-size: 0.9rem;
-    }
-
-    .breeds h2,
-    .puppies h2,
-    .about h2,
-    .contact h2,
-    .divine-section h2 {
-        font-size: 2rem;
-    }
-
-    .breed-grid,
-    .puppies-grid,
-    .about-features {
-        grid-template-columns: 1fr;
-    }
-
-    .divine-container {
-        grid-template-columns: 1fr;
-    }
-
-    .divine-traits {
-        grid-template-columns: 1fr;
-    }
+    align-items: flex-start;
+  }
+  .hero-cta {
+    flex-direction: column;
+    width: 100%;
+  }
+  .btn-primary,
+  .btn-outline {
+    justify-content: center;
+  }
+  body {
+    padding: 1rem 0.8rem;
+  }
+  .footer-note {
+    flex-direction: column;
+    gap: 0.3rem;
+  }
 }
