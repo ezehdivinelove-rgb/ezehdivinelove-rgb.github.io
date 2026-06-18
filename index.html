@@ -1,168 +1,135 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>D K9 Kennel - Cocachan Dog Puppies</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>D K9 Kennel · Cocachan Dog Breeder</title>
+  <!-- Font Awesome 6 (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="container">
-            <div class="logo">🐕 D K9 Kennel</div>
-            <ul class="nav-links">
-                <li><a href="#home">Home</a></li>
-                <li><a href="#divine">Divine</a></li>
-                <li><a href="#breeds">Breeds</a></li>
-                <li><a href="#puppies">Available Puppies</a></li>
-                <li><a href="#about">About Us</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </div>
-    </nav>
+  <div class="breeder-card">
+    <div class="breeder-grid">
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="container">
-            <h1>Welcome to D K9 Kennel</h1>
-            <p>Premium Cocachan Dog Puppies - Anambra State</p>
-            <button class="cta-btn">Browse Puppies</button>
-        </div>
-    </section>
-
-    <!-- Divine Mascot Section -->
-    <section id="divine" class="divine-section">
-        <div class="container">
-            <h2>Meet Divine - Our Mascot! 🌟</h2>
-            <div class="divine-container">
-                <div class="divine-cartoon">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 300 300'%3E%3Crect fill='%23F5DEB3' width='300' height='300'/%3E%3Ccircle cx='150' cy='120' r='70' fill='%23D2691E' stroke='%238B4513' stroke-width='3'/%3E%3Cellipse cx='120' cy='80' rx='25' ry='45' fill='%23CD853F' stroke='%238B4513' stroke-width='2' transform='rotate(-35 120 80)'/%3E%3Cellipse cx='180' cy='80' rx='25' ry='45' fill='%23CD853F' stroke='%238B4513' stroke-width='2' transform='rotate(35 180 80)'/%3E%3Cellipse cx='150' cy='140' rx='30' ry='25' fill='%23DEB887' stroke='%238B4513' stroke-width='2'/%3E%3Ccircle cx='150' cy='135' r='8' fill='%238B4513'/%3E%3Ccircle cx='135' cy='115' r='8' fill='%23000'/%3E%3Ccircle cx='137' cy='113' r='3' fill='%23FFF'/%3E%3Ccircle cx='165' cy='115' r='8' fill='%23000'/%3E%3Ccircle cx='167' cy='113' r='3' fill='%23FFF'/%3E%3Cpath d='M 150 140 Q 140 150 135 145' stroke='%238B4513' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cpath d='M 150 140 Q 160 150 165 145' stroke='%238B4513' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3Cellipse cx='150' cy='200' rx='60' ry='70' fill='%23D2691E' stroke='%238B4513' stroke-width='3'/%3E%3Crect x='110' y='250' width='20' height='50' rx='10' fill='%23D2691E' stroke='%238B4513' stroke-width='2'/%3E%3Crect x='170' y='250' width='20' height='50' rx='10' fill='%23D2691E' stroke='%238B4513' stroke-width='2'/%3E%3Cellipse cx='120' cy='305' rx='15' ry='10' fill='%238B4513'/%3E%3Cellipse cx='180' cy='305' rx='15' ry='10' fill='%238B4513'/%3E%3Cpath d='M 200 150 Q 240 120 235 70' stroke='%23D2691E' stroke-width='15' fill='none' stroke-linecap='round'/%3E%3Cpath d='M 100 130 L 80 120 L 90 140 Z' fill='%23FFD700'/%3E%3C/svg%3E" alt="Divine - Cocachan Dog" class="divine-image">
-                </div>
-                <div class="divine-info">
-                    <h3>Divine ✨</h3>
-                    <p><strong>Our beloved Cocachan mascot!</strong></p>
-                    <p>Divine is a premium Cocachan dog and the heart and soul of D K9 Kennel's breeding program. With a loving temperament and gentle nature, Divine represents the quality and care we put into every puppy we breed.</p>
-                    <ul class="divine-traits">
-                        <li>✨ Friendly & Loving</li>
-                        <li>🏆 Champion Bloodline</li>
-                        <li>💪 Healthy & Strong</li>
-                        <li>👑 Royal Personality</li>
-                    </ul>
-                </div>
+      <!-- LEFT COLUMN : hero & brand -->
+      <div class="hero-side">
+        <div>
+          <div class="breeder-badge">
+            <i class="fas fa-paw"></i> D K9 KENNEL · COCACHAN BREEDER
+          </div>
+          <h1 class="hero-title">
+            <i class="fas fa-dog"></i> D K9<br />Kennel
+          </h1>
+          <p class="hero-desc">
+            <strong>Premium Cocachan Puppies</strong> — health-checked, 
+            vaccinated, and raised with love in Anambra State.
+          </p>
+          <div class="feature-list">
+            <div class="feature-item">
+              <i class="fas fa-heart"></i> 100% pure breed Cocachan
             </div>
-        </div>
-    </section>
-
-    <!-- Breeds Section -->
-    <section id="breeds" class="breeds">
-        <div class="container">
-            <h2>Cocachan Dogs - Our Specialty</h2>
-            <div class="breed-grid">
-                <div class="breed-card">
-                    <div class="breed-emoji">🐕</div>
-                    <h3>Cocachan Dogs</h3>
-                    <p>Premium breed with excellent temperament</p>
-                </div>
-                <div class="breed-card">
-                    <div class="breed-emoji">💎</div>
-                    <h3>Pure Bloodline</h3>
-                    <p>Certified and health-tested parents</p>
-                </div>
-                <div class="breed-card">
-                    <div class="breed-emoji">🏥</div>
-                    <h3>Vet Checked</h3>
-                    <p>All puppies are fully vaccinated</p>
-                </div>
-                <div class="breed-card">
-                    <div class="breed-emoji">❤️</div>
-                    <h3>Well Socialized</h3>
-                    <p>Raised with love and care</p>
-                </div>
+            <div class="feature-item">
+              <i class="fas fa-syringe"></i> Vaccinated &amp; dewormed
             </div>
-        </div>
-    </section>
-
-    <!-- Available Puppies Section -->
-    <section id="puppies" class="puppies">
-        <div class="container">
-            <h2>Available Cocachan Puppies</h2>
-            <div class="puppies-grid">
-                <div class="puppy-card">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23E8D7C3' width='200' height='200'/%3E%3Ccircle cx='100' cy='70' r='50' fill='%23CD853F' stroke='%238B4513' stroke-width='2'/%3E%3Cellipse cx='75' cy='40' rx='18' ry='35' fill='%23D2691E' stroke='%238B4513' stroke-width='2' transform='rotate(-30 75 40)'/%3E%3Cellipse cx='125' cy='40' rx='18' ry='35' fill='%23D2691E' stroke='%238B4513' stroke-width='2' transform='rotate(30 125 40)'/%3E%3Cellipse cx='100' cy='90' rx='20' ry='18' fill='%23DEB887' stroke='%238B4513' stroke-width='2'/%3E%3Ccircle cx='100' cy='85' r='5' fill='%238B4513'/%3E%3Ccircle cx='88' cy='65' r='5' fill='%23000'/%3E%3Ccircle cx='112' cy='65' r='5' fill='%23000'/%3E%3Cellipse cx='100' cy='130' rx='45' ry='55' fill='%23CD853F' stroke='%238B4513' stroke-width='2'/%3E%3Crect x='70' y='170' width='14' height='30' rx='7' fill='%23CD853F' stroke='%238B4513' stroke-width='2'/%3E%3Crect x='116' y='170' width='14' height='30' rx='7' fill='%23CD853F' stroke='%238B4513' stroke-width='2'/%3E%3Cpath d='M 140 100 Q 160 90 155 50' stroke='%23CD853F' stroke-width='10' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" alt="Cocachan Puppy Luna" class="puppy-image-real">
-                    <h3>Luna</h3>
-                    <p><strong>Breed:</strong> Cocachan Dog</p>
-                    <p><strong>Age:</strong> 8 weeks</p>
-                    <p><strong>Price:</strong> ₦200,000</p>
-                    <button class="inquire-btn">Inquire</button>
-                </div>
-                <div class="puppy-card">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23E8D7C3' width='200' height='200'/%3E%3Ccircle cx='100' cy='70' r='50' fill='%23D2691E' stroke='%238B4513' stroke-width='2'/%3E%3Cellipse cx='75' cy='40' rx='18' ry='35' fill='%238B4513' stroke='%238B4513' stroke-width='2' transform='rotate(-30 75 40)'/%3E%3Cellipse cx='125' cy='40' rx='18' ry='35' fill='%238B4513' stroke='%238B4513' stroke-width='2' transform='rotate(30 125 40)'/%3E%3Cellipse cx='100' cy='90' rx='20' ry='18' fill='%23DEB887' stroke='%238B4513' stroke-width='2'/%3E%3Ccircle cx='100' cy='85' r='5' fill='%238B4513'/%3E%3Ccircle cx='88' cy='65' r='5' fill='%23000'/%3E%3Ccircle cx='112' cy='65' r='5' fill='%23000'/%3E%3Cellipse cx='100' cy='130' rx='45' ry='55' fill='%23D2691E' stroke='%238B4513' stroke-width='2'/%3E%3Crect x='70' y='170' width='14' height='30' rx='7' fill='%23D2691E' stroke='%238B4513' stroke-width='2'/%3E%3Crect x='116' y='170' width='14' height='30' rx='7' fill='%23D2691E' stroke='%238B4513' stroke-width='2'/%3E%3Cpath d='M 140 100 Q 160 90 155 50' stroke='%23D2691E' stroke-width='10' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" alt="Cocachan Puppy Max" class="puppy-image-real">
-                    <h3>Max</h3>
-                    <p><strong>Breed:</strong> Cocachan Dog</p>
-                    <p><strong>Age:</strong> 10 weeks</p>
-                    <p><strong>Price:</strong> ₦200,000</p>
-                    <button class="inquire-btn">Inquire</button>
-                </div>
-                <div class="puppy-card">
-                    <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23E8D7C3' width='200' height='200'/%3E%3Ccircle cx='100' cy='70' r='50' fill='%23C19A6B' stroke='%238B4513' stroke-width='2'/%3E%3Cellipse cx='75' cy='40' rx='18' ry='35' fill='%23BDB76B' stroke='%238B4513' stroke-width='2' transform='rotate(-30 75 40)'/%3E%3Cellipse cx='125' cy='40' rx='18' ry='35' fill='%23BDB76B' stroke='%238B4513' stroke-width='2' transform='rotate(30 125 40)'/%3E%3Cellipse cx='100' cy='90' rx='20' ry='18' fill='%23DEB887' stroke='%238B4513' stroke-width='2'/%3E%3Ccircle cx='100' cy='85' r='5' fill='%238B4513'/%3E%3Ccircle cx='88' cy='65' r='5' fill='%23000'/%3E%3Ccircle cx='112' cy='65' r='5' fill='%23000'/%3E%3Cellipse cx='100' cy='130' rx='45' ry='55' fill='%23C19A6B' stroke='%238B4513' stroke-width='2'/%3E%3Crect x='70' y='170' width='14' height='30' rx='7' fill='%23C19A6B' stroke='%238B4513' stroke-width='2'/%3E%3Crect x='116' y='170' width='14' height='30' rx='7' fill='%23C19A6B' stroke='%238B4513' stroke-width='2'/%3E%3Cpath d='M 140 100 Q 160 90 155 50' stroke='%23C19A6B' stroke-width='10' fill='none' stroke-linecap='round'/%3E%3C/svg%3E" alt="Cocachan Puppy Bella" class="puppy-image-real">
-                    <h3>Bella</h3>
-                    <p><strong>Breed:</strong> Cocachan Dog</p>
-                    <p><strong>Age:</strong> 6 weeks</p>
-                    <p><strong>Price:</strong> ₦200,000</p>
-                    <button class="inquire-btn">Inquire</button>
-                </div>
+            <div class="feature-item">
+              <i class="fas fa-shield-alt"></i> Health guarantee &amp; breeder support
             </div>
+          </div>
         </div>
-    </section>
 
-    <!-- About Us Section -->
-    <section id="about" class="about">
-        <div class="container">
-            <h2>About D K9 Kennel</h2>
-            <p>We are dedicated Cocachan dog breeders with over 10 years of experience. Our mission is to breed healthy, happy puppies with excellent temperaments. All our dogs are health-tested and come with full documentation. Divine is the heart of our breeding program!</p>
-            <div class="about-features">
-                <div class="feature">
-                    <h3>✓ Health Guaranteed</h3>
-                    <p>All Cocachan puppies are vet-checked and vaccinated</p>
-                </div>
-                <div class="feature">
-                    <h3>✓ Lifetime Support</h3>
-                    <p>We're here to help throughout your dog's life</p>
-                </div>
-                <div class="feature">
-                    <h3>✓ Certified Breeders</h3>
-                    <p>Members of recognized breeding associations</p>
-                </div>
+        <div class="hero-cta">
+          <span class="btn-primary"><i class="fas fa-paw"></i> N250,000</span>
+          <span class="btn-outline"><i class="fas fa-phone-alt"></i> 09133750885</span>
+        </div>
+        <div class="hero-contact">
+          <span><i class="fas fa-map-pin"></i> Anambra State, Nigeria</span>
+          <span><i class="fas fa-clock"></i> Mon–Sat · 8am – 6pm</span>
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN : breed showcase -->
+      <div class="breed-side">
+        <div class="section-tag"><i class="fas fa-paw"></i> available puppies</div>
+        <h2>Cocachan Puppies</h2>
+        <div class="breed-sub">2 months old · ready for their forever home</div>
+
+        <!-- breed cards grid -->
+        <div class="breed-grid-cards">
+          <!-- card 1 -->
+          <div class="breed-card">
+            <div class="breed-emoji">🐕</div>
+            <div class="breed-name">Cocachan Male</div>
+            <div class="breed-detail">Golden · 2 months old</div>
+            <div class="breed-meta">
+              <span><i class="fas fa-calendar-alt"></i> ready now</span>
+              <span class="breed-tag">N250,000</span>
             </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact">
-        <div class="container">
-            <h2>Get in Touch</h2>
-            <form class="contact-form">
-                <input type="text" placeholder="Your Name" required>
-                <input type="email" placeholder="Your Email" required>
-                <textarea placeholder="Your Message" rows="5" required></textarea>
-                <button type="submit" class="submit-btn">Send Message</button>
-            </form>
-            <div class="contact-info">
-                <p>📞 Phone: <a href="tel:09133750885">09133750885</a></p>
-                <p>📧 Email: info@dk9kennel.com</p>
-                <p>📍 Location: Anambra State, Nigeria</p>
+          </div>
+          <!-- card 2 -->
+          <div class="breed-card">
+            <div class="breed-emoji">🐩</div>
+            <div class="breed-name">Cocachan Female</div>
+            <div class="breed-detail">Cream · 2 months old</div>
+            <div class="breed-meta">
+              <span><i class="fas fa-calendar-alt"></i> ready now</span>
+              <span class="breed-tag">N250,000</span>
             </div>
+          </div>
+          <!-- card 3 -->
+          <div class="breed-card">
+            <div class="breed-emoji">🦮</div>
+            <div class="breed-name">Cocachan Male</div>
+            <div class="breed-detail">Black &amp; white · 2 months</div>
+            <div class="breed-meta">
+              <span><i class="fas fa-calendar-alt"></i> ready now</span>
+              <span class="breed-tag">N250,000</span>
+            </div>
+          </div>
+          <!-- card 4 -->
+          <div class="breed-card">
+            <div class="breed-emoji">🐾</div>
+            <div class="breed-name">Cocachan Female</div>
+            <div class="breed-detail">Brown · 2 months old</div>
+            <div class="breed-meta">
+              <span><i class="fas fa-calendar-alt"></i> ready now</span>
+              <span class="breed-tag">N250,000</span>
+            </div>
+          </div>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2026 D K9 Kennel - Premium Cocachan Dogs. All rights reserved. 🐕✨</p>
+        <!-- footer contact & social -->
+        <div class="breeder-footer">
+          <div class="contact-chip">
+            <i class="fas fa-phone-alt"></i>
+            <div>
+              <span>09133750885</span>
+              <small>call or WhatsApp</small>
+            </div>
+          </div>
+          <div class="contact-chip">
+            <i class="fas fa-map-pin"></i>
+            <div>
+              <span>Anambra State</span>
+              <small>viewing by appointment</small>
+            </div>
+          </div>
+          <div class="social-icons">
+            <i class="fab fa-whatsapp"></i>
+            <i class="fab fa-instagram"></i>
+            <i class="fab fa-facebook"></i>
+          </div>
         </div>
-    </footer>
 
-    <script src="script.js"></script>
+        <div class="footer-note">
+          <span>© 2026 D K9 Kennel · all rights reserved</span>
+          <span><i class="fas fa-shield-alt"></i> ID: DK9-2026-04</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ⭐ JAVASCRIPT IS LINKED HERE ⭐ -->
+  <script src="script.js"></script>
 </body>
 </html>
