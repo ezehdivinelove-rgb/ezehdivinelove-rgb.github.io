@@ -1,162 +1,154 @@
-// =====================================================
-// D K9 Kennel · Cocachan Dog Breeder Website
-// Professional interactive features
-// =====================================================
+const coins = [
+  { id:1, name:'Bitcoin',   sym:'BTC',  price:67420, change:+2.34, cap:'$1.33T', color:'#f7931a', bg:'rgba(247,147,26,0.15)',  spark:[60,55,62,70,65,80,78] },
+  { id:2, name:'Ethereum',  sym:'ETH',  price:3521,  change:+1.87, cap:'$423B',  color:'#627eea', bg:'rgba(98,126,234,0.15)',  spark:[50,55,48,60,72,68,74] },
+  { id:3, name:'BNB',       sym:'BNB',  price:589,   change:-0.95, cap:'$88B',   color:'#f3ba2f', bg:'rgba(243,186,47,0.15)',  spark:[80,72,68,65,70,62,60] },
+  { id:4, name:'Solana',    sym:'SOL',  price:174,   change:+5.12, cap:'$81B',   color:'#9945ff', bg:'rgba(153,69,255,0.15)',  spark:[40,48,55,50,65,70,80] },
+  { id:5, name:'Cardano',   sym:'ADA',  price:0.61,  change:-1.43, cap:'$21B',   color:'#0d4ae3', bg:'rgba(13,74,227,0.15)',   spark:[70,65,60,55,58,52,50] },
+  { id:6, name:'Avalanche', sym:'AVAX', price:38.5,  change:+3.21, cap:'$16B',   color:'#e84142', bg:'rgba(232,65,66,0.15)',   spark:[45,50,55,60,58,65,70] },
+  { id:7, name:'Chainlink', sym:'LINK', price:18.9,  change:+0.78, cap:'$11B',   color:'#375bd2', bg:'rgba(55,91,210,0.15)',   spark:[55,58,60,57,62,65,63] },
+  { id:8, name:'Polkadot',  sym:'DOT',  price:9.1,   change:-2.11, cap:'$12B',   color:'#e6007a', bg:'rgba(230,0,122,0.15)',   spark:[65,60,55,50,48,45,43] },
+];
 
-(function() {
-    'use strict';
+const rates   = { BTC:67420, ETH:3521, BNB:589, SOL:174, ADA:0.61 };
+const fxRates = { USD:1, EUR:0.92, GBP:0.79 };
 
-    // -------------------------------------------------
-    // 1. LIVE COUNTER - Puppies sold this season
-    // -------------------------------------------------
+const holdings = [
+  { sym:'BTC', amount:0.42, price:67420 },
+  { sym:'ETH', amount:3.8,  price:3521  },
+  { sym:'SOL', amount:25,   price:174   },
+  { sym:'ADA', amount:1500, price:0.61  },
+];
 
-    const heroSide = document.querySelector('.hero-side');
-    if (heroSide) {
-        if (!document.querySelector('.live-counter')) {
-            const counterWrapper = document.createElement('div');
-            counterWrapper.className = 'live-counter';
-            counterWrapper.style.cssText = `
-                margin-top: 0.8rem;
-                padding: 0.4rem 1rem;
-                background: rgba(30, 30, 42, 0.06);
-                border-radius: 40px;
-                display: inline-flex;
-                align-items: center;
-                gap: 0.6rem;
-                font-size: 0.85rem;
-                color: #3d2c1f;
-                font-weight: 500;
-                backdrop-filter: blur(2px);
-            `;
-            counterWrapper.innerHTML = `
-                <i class="fas fa-paw" style="color: #b47b5a;"></i>
-                <span id="reservedCount">18</span> puppies sold this season
-            `;
-            const cta = heroSide.querySelector('.hero-cta');
-            if (cta) {
-                cta.after(counterWrapper);
-            } else {
-                heroSide.appendChild(counterWrapper);
-            }
-        }
-    }
+function renderTable() {
+  const tbody = document.getElementById('market-tbody');
+  tbody.innerHTML = coins.map(c => {
+    const cls  = c.change >= 0 ? 'up' : 'down';
+    const sign = c.change >= 0 ? '+' : '';
+    const sparkClass = c.change >= 0 ? '' : 'neg';
+    const max  = Math.max(...c.spark);
+    const bars = c.spark.map(v => `<span style="height:${(v/max*100)}%"></span>`).join('');
+    const priceFmt = c.price >= 1
+      ? '$' + c.price.toLocaleString()
+      : '$' + c.price.toFixed(4);
+    return `
+      <tr>
+        <td style="color:var(--muted)">${c.id}</td>
+        <td>
+          <div class="coin-cell">
+            <div class="coin-icon" style="background:${c.bg};color:${c.color}">${c.sym.slice(0,2)}</div>
+            <div><div class="coin-name">${c.name}</div><div class="coin-sym">${c.sym}</div></div>
+          </div>
+        </td>
+        <td style="font-weight:700">${priceFmt}</td>
+        <td class="${cls}">${sign}${c.change}%</td>
+        <td style="color:var(--muted)">${c.cap}</td>
+        <td><div class="sparkline ${sparkClass}">${bars}</div></td>
+      </tr>`;
+  }).join('');
+}
 
-    let reserved = 18;
-    const counterEl = document.getElementById('reservedCount');
+function renderTicker() {
+  const items = [...coins, ...coins].map(c => {
+    const cls  = c.change >= 0 ? 'up' : 'down';
+    const sign = c.change >= 0 ? '+' : '';
+    const p    = c.price >= 1
+      ? '$' + c.price.toLocaleString()
+      : '$' + c.price.toFixed(4);
+    return `<span class="ticker-item">
+      <span class="sym">${c.sym}</span>
+      <span class="price">${p}</span>
+      <span class="change ${cls}">${sign}${c.change}%</span>
+    </span>`;
+  }).join('');
+  document.getElementById('ticker').innerHTML = items;
+}
 
-    if (counterEl) {
-        setInterval(() => {
-            const increment = Math.floor(Math.random() * 2) + 1;
-            reserved += increment;
-            counterEl.textContent = reserved;
+function renderPortfolio() {
+  const grid = document.getElementById('portfolio-grid');
+  let total = 0;
+  grid.innerHTML = holdings.map(h => {
+    const val = h.amount * h.price;
+    total += val;
+    const pct = (Math.random() * 8 - 2).toFixed(2);
+    const cls  = pct >= 0 ? 'up' : 'down';
+    const sign = pct >= 0 ? '+' : '';
+    return `
+      <div class="port-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.3rem">
+          <span style="font-weight:700;font-size:0.9rem">${h.sym}</span>
+          <span class="pct ${cls}">${sign}${pct}%</span>
+        </div>
+        <div class="port-val">$${val.toLocaleString(undefined,{maximumFractionDigits:0})}</div>
+        <div class="port-label">${h.amount} ${h.sym}</div>
+      </div>`;
+  }).join('');
 
-            counterEl.style.transition = 'transform 0.15s ease';
-            counterEl.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                counterEl.style.transform = 'scale(1)';
-            }, 150);
-        }, 5000);
-    }
+  document.getElementById('total-balance').textContent =
+    '$' + total.toLocaleString(undefined, { maximumFractionDigits: 0 });
+  const pnl = (total * 0.023).toFixed(0);
+  document.getElementById('total-pnl').textContent =
+    `+$${Number(pnl).toLocaleString()} today`;
 
-    // -------------------------------------------------
-    // 2. BREED CARD INTERACTIONS
-    // -------------------------------------------------
+  const colors = ['#6c63ff','#00d4aa','#f7931a','#9945ff','#e84142','#f3ba2f','#627eea'];
+  const days   = [72, 68, 75, 80, 77, 85, 91];
+  const maxv   = Math.max(...days);
+  document.getElementById('portfolio-chart').innerHTML =
+    days.map((v, i) =>
+      `<div class="bar" style="height:${(v/maxv*100)}%;background:${colors[i % colors.length]}"></div>`
+    ).join('');
+}
 
-    const breedCards = document.querySelectorAll('.breed-card');
-    breedCards.forEach((card) => {
-        card.addEventListener('mouseenter', function() {
-            const name = this.querySelector('.breed-name')?.textContent || 'Puppy';
-            console.log(`[D K9] Interest: ${name}`);
-        });
+function convert() {
+  const amount = parseFloat(document.getElementById('conv-amount').value) || 0;
+  const from   = document.getElementById('conv-from').value;
+  const to     = document.getElementById('conv-to').value;
+  const usd    = amount * (rates[from] || 1);
+  const el     = document.getElementById('conv-result');
 
-        card.addEventListener('click', function() {
-            const name = this.querySelector('.breed-name')?.textContent || 'Puppy';
-            const price = this.querySelector('.breed-tag')?.textContent || 'N250,000';
-            console.log(`[Inquiry] ${name} - ${price}`);
+  if (fxRates[to]) {
+    const sym = to === 'USD' ? '$' : to === 'EUR' ? '€' : '£';
+    const res = (usd * fxRates[to]).toLocaleString(undefined,
+      { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    el.textContent = `= ${sym}${res} ${to}`;
+  } else {
+    const res = (usd / (rates[to] || 1)).toFixed(6);
+    el.textContent = `= ${res} ${to}`;
+  }
+}
 
-            const tag = this.querySelector('.breed-tag');
-            if (tag) {
-                const originalText = tag.textContent;
-                const originalBg = tag.style.background;
-                tag.textContent = '✦ interested';
-                tag.style.background = '#b47b5a';
-                tag.style.color = 'white';
-                setTimeout(() => {
-                    tag.textContent = originalText;
-                    tag.style.background = originalBg || '#1e1e2a';
-                    tag.style.color = '#ffffff';
-                }, 1200);
-            }
-        });
-    });
+function fluctuatePrices() {
+  coins.forEach(c => {
+    const delta = (Math.random() - 0.5) * 0.004;
+    c.price  = +(c.price * (1 + delta)).toFixed(c.price >= 1 ? 2 : 6);
+    c.change = +(c.change + (Math.random() - 0.5) * 0.1).toFixed(2);
+  });
+  renderTable();
+  renderTicker();
+}
 
-    // -------------------------------------------------
-    // 3. SOCIAL ICON INTERACTIONS
-    // -------------------------------------------------
+function openModal()  { document.getElementById('modal-overlay').classList.add('open'); }
+function closeModal() { document.getElementById('modal-overlay').classList.remove('open'); }
+function closeModalOutside(e) { if (e.target.id === 'modal-overlay') closeModal(); }
+function fakeSignup() {
+  closeModal();
+  alert('Welcome to CryptoX! Your account has been created.');
+}
 
-    const socialIcons = document.querySelectorAll('.social-icons i');
-    socialIcons.forEach((icon) => {
-        icon.addEventListener('click', function() {
-            const platform = this.className.replace('fab fa-', '');
-            console.log(`[Social] ${platform} clicked`);
+function subscribe() {
+  const v   = document.getElementById('email-input').value;
+  const msg = document.getElementById('sub-msg');
+  if (!v || !v.includes('@')) {
+    msg.style.color = 'var(--down)';
+    msg.textContent = 'Please enter a valid email.';
+    return;
+  }
+  msg.style.color = 'var(--up)';
+  msg.textContent = '✓ You\'re subscribed! Check your inbox.';
+  document.getElementById('email-input').value = '';
+}
 
-            const phone = '09133750885';
-            if (platform === 'whatsapp') {
-                alert(`📱 Chat with us on WhatsApp: ${phone}`);
-            } else {
-                alert(`🔗 Follow us on ${platform.charAt(0).toUpperCase() + platform.slice(1)}!`);
-            }
-        });
-    });
-
-    // -------------------------------------------------
-    // 4. BUTTON INTERACTIONS
-    // -------------------------------------------------
-
-    const priceBtn = document.querySelector('.btn-primary');
-    if (priceBtn) {
-        priceBtn.addEventListener('click', function() {
-            console.log('[CTA] Price clicked - N250,000');
-            this.style.transform = 'scale(0.96)';
-            setTimeout(() => {
-                this.style.transform = 'scale(1)';
-            }, 150);
-            alert('🐾 Cocachan puppies are N250,000 each.\nIncludes: vaccination, deworming, and health certificate.\nCall 09133750885 for more details!');
-        });
-    }
-
-    const phoneBtn = document.querySelector('.btn-outline');
-    if (phoneBtn) {
-        phoneBtn.addEventListener('click', function() {
-            console.log('[CTA] Phone clicked: 09133750885');
-            alert('📞 Call us at 09133750885\n📍 Located in Anambra State\nMon–Sat · 8am – 6pm');
-        });
-    }
-
-    // -------------------------------------------------
-    // 5. CONTACT CHIP INTERACTIONS
-    // -------------------------------------------------
-
-    const contactChips = document.querySelectorAll('.contact-chip');
-    contactChips.forEach((chip) => {
-        chip.addEventListener('click', function() {
-            const text = this.querySelector('span')?.textContent || '';
-            if (text.includes('09133750885')) {
-                alert(`📞 Call or WhatsApp: 09133750885`);
-            } else if (text.includes('Anambra')) {
-                alert(`📍 D K9 Kennel\nAnambra State, Nigeria\nViewing by appointment only.`);
-            }
-        });
-    });
-
-    // -------------------------------------------------
-    // 6. CONSOLE GREETING
-    // -------------------------------------------------
-
-    console.log('🐕 D K9 Kennel · Cocachan Dog Breeder');
-    console.log('📍 Anambra State, Nigeria');
-    console.log('📞 09133750885');
-    console.log('💰 N250,000 per puppy');
-    console.log('✅ Interactive features loaded successfully.');
-
-})();
+renderTable();
+renderTicker();
+renderPortfolio();
+convert();
+setInterval(fluctuatePrices, 4000);
