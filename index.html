@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ffffff">
+<title>Bible</title>
+<style>
+/* ============ RESET ============ */
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+body { background: #f9f9f9; color: #111; transition: background .3s, color .3s; }
+body.dark { background: #121212; color: #fff; }
+
+/* ============ APP FRAME ============ */
+#app {
+  width: 100%; max-width: 480px; height: 100vh; margin: 0 auto;
+  background: #f9f9f9; display: flex; flex-direction: column;
+  position: relative; overflow: hidden; transition: background .3s;
+}
+body.dark #app { background: #121212; }
+
+/* ============ HEADER ============ */
+.header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; background: #fff; border-bottom: 1px solid #eee;
+  flex-shrink: 0; transition: background .3s, border-color .3s;
+}
+body.dark .header { background: #1e1e1e; border-bottom-color: #2c2c2c; }
+.header h1 { font-size: 19px; font-weight: 700; }
+.header .icon-btn {
+  background: none; border: none; cursor: pointer; color: #2563eb;
+  display: flex; align-items: center; padding: 4px;
+}
+body.dark .header .icon-btn { color: #60a5fa; }
+.header svg { width: 24px; height: 24px; }
+
+/* ============ CONTENT SCROLL ============ */
+.content { flex: 1; overflow-y: auto; padding: 22px 18px 20px; -webkit-overflow-scrolling: touch; }
+.content::-webkit-scrollbar { width: 0; }
+
+/* ============ LIBRARY HEADER ============ */
+.library-label {
+  color: #8B5A2B; font-size: 11px; font-weight: 800;
+  letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px;
+}
+body.dark .library-label { color: #fbbf24; }
+.library-title { font-size: 32px; font-weight: 900; letter-spacing: -0.8px; line-height: 1.1; margin-bottom: 8px; }
+.library-subtitle { font-size: 15px; font-style: italic; color: #6b7280; margin-bottom: 24px; line-height: 1.4; }
+body.dark .library-subtitle { color: #9ca3af; }
+
+/* ============ CONTINUE READING ============ */
+.continue-card {
+  display: flex; align-items: center; justify-content: space-between;
+  background: #f0f0f0; padding: 18px 20px; border-radius: 16px;
+  cursor: pointer; margin-bottom: 16px; transition: transform .15s, background .3s;
+}
+body.dark .continue-card { background: #2c2c2c; }
+.continue-card:active { transform: scale(.98); }
+.continue-card .label { color: #2563eb; font-size: 17px; font-weight: 700; margin-bottom: 3px; }
+body.dark .continue-card .label { color: #60a5fa; }
+.continue-card .sub { font-size: 13px; color: #6b7280; }
+body.dark .continue-card .sub { color: #9ca3af; }
+.continue-card .arrow { color: #2563eb; font-size: 24px; font-weight: bold; }
+body.dark .continue-card .arrow { color: #60a5fa; }
+
+/* ============ FILTER BAR ============ */
+.filter-bar {
+  display: flex; align-items: center; background: #f0f0f0;
+  border-radius: 12px; padding: 14px 16px; margin-bottom: 26px;
+  transition: background .3s;
+}
+body.dark .filter-bar { background: #2c2c2c; }
+.filter-bar .icon { color: #9ca3af; margin-right: 12px; font-size: 20px; }
+.filter-bar input {
+  flex: 1; background: none; border: none; outline: none;
+  font-size: 15px; color: inherit; font-family: inherit;
+}
+.filter-bar input::placeholder { color: #9ca3af; }
+
+/* ============ CATEGORY ============ */
+.category-title { color: #6b7280; font-size: 13px; font-weight: 700; margin-bottom: 12px; }
+body.dark .category-title { color: #9ca3af; }
+
+/* ============ BOOK ITEM ============ */
+.book-item {
+  display: flex; align-items: center; background: #f0f0f0;
+  padding: 16px; border-radius: 12px; margin-bottom: 8px;
+  cursor: pointer; transition: transform .15s, background .3s;
+}
+body.dark .book-item { background: #2c2c2c; }
+.book-item:active { transform: scale(.98); }
+.book-num { color: #9ca3af; font-size: 17px; font-weight: 700; width: 40px; flex-shrink: 0; }
+.book-info { flex: 1; min-width: 0; }
+.book-name { font-size: 16px; font-weight: 700; margin-bottom: 3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.book-chapters { font-size: 11px; color: #6b7280; letter-spacing: .6px; font-weight: 500; }
+body.dark .book-chapters { color: #9ca3af; }
+.book-arrow { color: #9ca3af; font-size: 22px; margin-left: 8px; }
+
+/* ============ TESTAMENT TOGGLE ============ */
+.toggle-container {
+  display: flex; gap: 8px; padding: 14px 18px; background: #fff;
+  border-top: 1px solid #eee; flex-shrink: 0; transition: background .3s, border-color .3s;
+}
+body.dark .toggle-container { background: #1e1e1e; border-top-color: #2c2c2c; }
+.toggle-btn {
+  flex: 1; padding: 13px; border: none; border-radius: 10px;
+  font-size: 14px; font-weight: 700; background: #e5e7eb; color: #111;
+  cursor: pointer; transition: all .2s; font-family: inherit;
+}
+body.dark .toggle-btn { background: #2c2c2c; color: #fff; }
+.toggle-btn.active { background: #2563eb; color: #fff; }
+
+/* ============ BOTTOM NAV ============ */
+.bottom-nav {
+  display: flex; background: #fff; border-top: 1px solid #eee;
+  flex-shrink: 0; transition: background .3s, border-color .3s;
+}
+body.dark .bottom-nav { background: #1e1e1e; border-top-color: #2c2c2c; }
+.nav-item {
+  flex: 1; padding: 10px 4px 12px; display: flex; flex-direction: column;
+  align-items: center; gap: 4px; background: none; border: none;
+  cursor: pointer; color: #9ca3af; font-size: 10px; font-family: inherit;
+  transition: color .2s;
+}
+.nav-item svg { width: 22px; height: 22px; }
+.nav-item.active { color: #2563eb; }
+body.dark .nav-item.active { color: #60a5fa; }
+
+/* ============ SCREENS ============ */
+.screen { display: none; flex: 1; flex-direction: column; overflow: hidden; }
+.screen.active { display: flex; }
+
+/* ============ READING VIEW ============ */
+.reading-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; background: #fff; border-bottom: 1px solid #eee;
+  flex-shrink: 0; transition: background .3s;
+}
+body.dark .reading-header { background: #1e1e1e; border-bottom-color: #2c2c2c; }
+.reading-header .back { font-size: 24px; color: #2563eb; cursor: pointer; background: none; border: none; padding: 4px 10px 4px 0; }
+.reading-header h2 { font-size: 17px; font-weight: 700; }
+.reading-header .chapters-btn {
+  background: none; border: none; color: #2563eb; font-size: 22px;
+  cursor: pointer; padding: 4px;
+}
+.reading-body { flex: 1; overflow-y: auto; padding: 24px 22px 100px; }
+.reading-body h3 { font-size: 24px; font-weight: 800; margin-bottom: 18px; }
+.verse-line { font-size: 18px; line-height: 1.7; margin-bottom: 12px; color: #1f2937; }
+body.dark .verse-line { color: #d1d5db; }
+.verse-num { color: #2563eb; font-weight: 700; font-size: 12px; vertical-align: super; margin-right: 4px; }
+body.dark .verse-num { color: #60a5fa; }
+.reading-nav {
+  display: flex; gap: 10px; padding: 14px 18px; background: #fff;
+  border-top: 1px solid #eee; flex-shrink: 0;
+}
+body.dark .reading-nav { background: #1e1e1e; border-top-color: #2c2c2c; }
+.reading-nav button {
+  flex: 1; padding: 12px; background: #2563eb; color: #fff; border: none;
+  border-radius: 10px; font-weight: 700; cursor: pointer; font-family: inherit;
+}
+.reading-nav button:disabled { background: #9ca3af; cursor: not-allowed; }
+
+/* ============ CHAT SCREEN ============ */
+.chat-messages { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 12px; }
+.msg {
+  max-width: 80%; padding: 14px 16px; border-radius: 16px;
+  font-size: 15px; line-height: 1.5; word-wrap: break-word;
+}
+.msg.user { background: #2563eb; color: #fff; align-self: flex-end; border-bottom-right-radius: 4px; }
+.msg.ai { background: #f0f0f0; color: #111; align-self: flex-start; border-bottom-left-radius: 4px; }
+body.dark .msg.ai { background: #2c2c2c; color: #fff; }
+.chat-input-area {
+  display: flex; gap: 8px; padding: 14px 16px; background: #fff;
+  border-top: 1px solid #eee; flex-shrink: 0;
+}
+body.dark .chat-input-area { background: #1e1e1e; border-top-color: #2c2c2c; }
+.chat-input-area input {
+  flex: 1; padding: 12px 18px; border: none; border-radius: 24px;
+  background: #f0f0f0; font-size: 15px; outline: none; color: inherit; font-family: inherit;
+}
+body.dark .chat-input-area input { background: #2c2c2c; }
+.chat-input-area button {
+  width: 46px; height: 46px; border-radius: 50%; background: #2563eb;
+  color: #fff; border: none; cursor: pointer; font-size: 18px; flex-shrink: 0;
+}
+
+/* ============ SIMPLE SCREENS (Audio, Daily, Plan) ============ */
+.simple-screen { flex: 1; overflow-y: auto; padding: 26px 22px; }
+.simple-screen h2 { font-size: 26px; font-weight: 800; margin-bottom: 24px; }
+.center-col { display: flex; flex-direction: column; align-items: center; text-align: center; }
+
+/* Daily Verse */
+.quote-icon { font-size: 60px; color: #2563eb; line-height: 1; margin-bottom: 20px; }
+.daily-verse { font-size: 22px; font-style: italic; line-height: 1.5; margin-bottom: 20px; }
+.daily-ref { font-size: 18px; font-weight: 700; color: #2563eb; margin-bottom: 40px; }
+
+/* Audio */
+.audio-circle {
+  width: 200px; height: 200px; border-radius: 50%; background: #dbeafe;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 30px;
+}
+body.dark .audio-circle { background: #1e3a8a; }
+.audio-circle svg { width: 80px; height: 80px; color: #2563eb; }
+.audio-title { font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+.audio-sub { font-size: 14px; color: #6b7280; margin-bottom: 40px; }
+.audio-controls { display: flex; align-items: center; gap: 24px; margin-bottom: 30px; }
+.audio-controls button {
+  background: none; border: none; cursor: pointer; color: inherit; padding: 6px;
+}
+.audio-controls .play-btn {
+  width: 80px; height: 80px; border-radius: 50%; background: #2563eb;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+}
+.audio-controls svg { width: 30px; height: 30px; }
+.audio-controls .play-btn svg { width: 40px; height: 40px; }
+
+/* Reading Plan */
+.progress-card {
+  background: #dbeafe; border-radius: 16px; padding: 20px; margin-bottom: 30px;
+}
+body.dark .progress-card { background: #1e3a8a; }
+.progress-row { display: flex; justify-content: space-between; margin-bottom: 14px; font-weight: 700; }
+.progress-row span:last-child { color: #2563eb; }
+.progress-bar { height: 12px; background: #fff; border-radius: 6px; overflow: hidden; margin-bottom: 8px; }
+body.dark .progress-bar { background: #0f172a; }
+.progress-fill { height: 100%; background: #2563eb; transition: width .5s; }
+.progress-percent { font-size: 12px; color: #4b5563; }
+body.dark .progress-percent { color: #9ca3af; }
+.plan-section-title { font-size: 19px; font-weight: 800; margin-bottom: 16px; }
+.plan-item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 0;
+  border-bottom: 1px solid #eee; cursor: pointer;
+}
+body.dark .plan-item { border-bottom-color: #2c2c2c; }
+.plan-day {
+  width: 44px; height: 44px; border-radius: 50%; background: #2563eb;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; flex-shrink: 0;
+}
+.plan-day.locked { background: #e5e7eb; color: #111; }
+body.dark .plan-day.locked { background: #2c2c2c; color: #fff; }
+.plan-info { flex: 1; }
+.plan-title { font-weight: 700; margin-bottom: 3px; }
+.plan-sub { font-size: 13px; color: #6b7280; }
+body.dark .plan-sub { color: #9ca3af; }
+.plan-status { font-size: 22px; color: #9ca3af; }
+
+/* ============ MODAL ============ */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,.4);
+  display: none; align-items: flex-end; justify-content: center; z-index: 100;
+}
+.modal-overlay.active { display: flex; }
+.modal {
+  width: 100%; max-width: 480px; background: #fff; border-radius: 20px 20px 0 0;
+  padding: 24px 20px; max-height: 70vh; overflow-y: auto;
+  animation: slideUp .25s ease-out;
+}
+body.dark .modal { background: #1e1e1e; }
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal h3 { font-size: 18px; font-weight: 800; margin-bottom: 18px; }
+.modal-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 0; border-bottom: 1px solid #eee;
+}
+body.dark .modal-row { border-bottom-color: #2c2c2c; }
+.chapter-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.chapter-cell {
+  padding: 14px 0; text-align: center; background: #f0f0f0; border-radius: 8px;
+  cursor: pointer; font-weight: 600; transition: background .2s;
+}
+body.dark .chapter-cell { background: #2c2c2c; }
+.chapter-cell:active { background: #2563eb; color: #fff; }
+
+/* Switch */
+.switch { position: relative; width: 50px; height: 28px; background: #ccc; border-radius: 14px; cursor: pointer; transition: background .2s; }
+.switch.on { background: #2563eb; }
+.switch::after {
+  content: ''; position: absolute; top: 2px; left: 2px; width: 24px; height: 24px;
+  background: #fff; border-radius: 50%; transition: transform .2s;
+}
+.switch.on::after { transform: translateX(22px); }
+
+/* ============ SEARCH SCREEN ============ */
+.search-input-wrap {
+  display: flex; align-items: center; gap: 10px; padding: 14px 18px;
+  background: #fff; border-bottom: 1px solid #eee;
+}
+body.dark .search-input-wrap { background: #1e1e1e; border-bottom-color: #2c2c2c; }
+.search-input-wrap input {
+  flex: 1; padding: 10px 14px; border: none; outline: none;
+  background: #f0f0f0; border-radius: 10px; font-size: 15px;
+  color: inherit; font-family: inherit;
+}
+body.dark .search-input-wrap input { background: #2c2c2c; }
+.search-input-wrap button { background: none; border: none; color: #2563eb; font-size: 15px; cursor: pointer; }
+</style>
+</head>
+<body>
+
+<div id="app">
+
+  <!-- ===== HEADER ===== -->
+  <div class="header">
+    <button class="icon-btn" onclick="openSettings()" aria-label="Settings">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+    </button>
+    <h1 id="headerTitle">Bible</h1>
+    <button class="icon-btn" onclick="openSearch()" aria-label="Search">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m21 21-4.3-4.3"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- ===== SCREEN 1: BIBLE LIBRARY ===== -->
+  <div class="screen active" id="screen-bible">
+    <div class="content">
+      <div class="library-label">The Library</div>
+      <div class="library-title" id="testamentTitle">Old Testament</div>
+      <div class="library-subtitle">The books of law, history, poetry, and prophecy.</div>
+
+      <div class="continue-card" onclick="continueReading()">
+        <div>
+          <div class="label">Continue Reading</div>
+          <div class="sub" id="continueSub">Genesis Chapter 1</div>
+        </div>
+        <div class="arrow">›</div>
+      </div>
+
+      <div class="filter-bar">
+        <span class="icon">☰</span>
+        <input type="text" id="filterInput" placeholder="Filter by books..." oninput="renderBooks()">
+      </div>
+
+      <div id="bookList"></div>
+    </div>
+
+    <div class="toggle-container">
+      <button class="toggle-btn active" id="btnOld" onclick="switchTestament('Old')">Old Testament</button>
+      <button class="toggle-btn" id="btnNew" onclick="switchTestament('New')">New Testament</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 2: READING VIEW ===== -->
+  <div class="screen" id="screen-reading">
+    <div class="reading-header">
+      <button class="back" onclick="closeReading()">‹</button>
+      <h2 id="readingTitle">Genesis 1</h2>
+      <button class="chapters-btn" onclick="openChapters()">☰</button>
+    </div>
+    <div class="reading-body" id="readingBody"></div>
+    <div class="reading-nav">
+      <button id="prevBtn" onclick="changeChapter(-1)">‹ Previous</button>
+      <button id="nextBtn" onclick="changeChapter(1)">Next ›</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 3: LOCAL AI CHAT ===== -->
+  <div class="screen" id="screen-chat">
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg ai">Hello! I am your local offline Bible assistant. Ask me anything about scripture.</div>
+    </div>
+    <div class="chat-input-area">
+      <input type="text" id="chatInput" placeholder="Ask about the Bible..." onkeypress="if(event.key==='Enter')sendChat()">
+      <button onclick="sendChat()">➤</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 4: DAILY VERSES ===== -->
+  <div class="screen" id="screen-daily">
+    <div class="simple-screen center-col" style="justify-content:center; padding-top: 60px;">
+      <div class="quote-icon">❝</div>
+      <div class="daily-verse" id="dailyVerseText">Loading...</div>
+      <div class="daily-ref" id="dailyVerseRef"></div>
+      <button style="padding:12px 24px; background:#2563eb; color:#fff; border:none; border-radius:10px; font-weight:700; cursor:pointer;" onclick="alert('Sharing is not available in the offline demo.')">Share Verse</button>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 5: AUDIO BIBLE ===== -->
+  <div class="screen" id="screen-audio">
+    <div class="simple-screen center-col" style="justify-content:center; padding-top: 40px;">
+      <div class="audio-circle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 18v-6a9 9 0 0 1 18 0v6"></path>
+          <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path>
+        </svg>
+      </div>
+      <div class="audio-title" id="audioTitle">Genesis Chapter 1</div>
+      <div class="audio-sub">Offline Text-to-Speech Engine</div>
+      <div class="audio-controls">
+        <button onclick="speakPrev()">⏮</button>
+        <button class="play-btn" onclick="toggleSpeech()" id="playBtn">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <button onclick="speakNext()">⏭</button>
+      </div>
+      <div style="margin-top:10px;">
+        Speed: <select id="speedSelect" style="padding:6px 10px; border-radius:8px; border:1px solid #ccc; background: transparent; color: inherit;">
+          <option value="0.5">0.5x</option>
+          <option value="1" selected>1.0x</option>
+          <option value="1.5">1.5x</option>
+          <option value="2">2.0x</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN 6: READING PLAN ===== -->
+  <div class="screen" id="screen-plan">
+    <div class="simple-screen">
+      <h2>Your 365-Day Journey</h2>
+      <div class="progress-card">
+        <div class="progress-row">
+          <span>Overall Progress</span>
+          <span id="planDayLabel">Day 1 of 365</span>
+        </div>
+        <div class="progress-bar"><div class="progress-fill" id="planFill" style="width:0%"></div></div>
+        <div class="progress-percent" id="planPercent">0% Complete</div>
+      </div>
+      <div class="plan-section-title">Today's Reading</div>
+      <div id="planList"></div>
+    </div>
+  </div>
+
+  <!-- ===== BOTTOM NAV ===== -->
+  <div class="bottom-nav">
+    <button class="nav-item active" data-screen="bible" onclick="navigate('bible')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+      Bible
+    </button>
+    <button class="nav-item" data-screen="chat" onclick="navigate('chat')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v3M12 19v3M4.22 4.22l2.12 2.12M17.66 17.66l2.12 2.12M2 12h3M19 12h3M4.22 19.78l2.12-2.12M17.66 6.34l2.12-2.12"></path></svg>
+      Chat
+    </button>
+    <button class="nav-item" data-screen="daily" onclick="navigate('daily')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+      Daily Verses
+    </button>
+    <button class="nav-item" data-screen="audio" onclick="navigate('audio')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+      Audio Bible
+    </button>
+    <button class="nav-item" data-screen="plan" onclick="navigate('plan')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+      Reading Plan
+    </button>
+  </div>
+
+</div>
+
+<!-- ===== MODAL ===== -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modalContent"></div>
+</div>
+
+<script>
+/* =========================================================
+   1. LOCAL BIBLE DATABASE (Pre-loaded, 100% Offline)
+   ========================================================= */
+const BIBLE_BOOKS = [
+  // OLD TESTAMENT
+  {id:1,  name:'Genesis',      abbr:'Ge',   testament:'Old', category:'Books of Law',      chapters:50},
+  {id:2,  name:'Exodus',       abbr:'Exo',  testament:'Old', category:'Books of Law',      chapters:40},
+  {id:3,  name:'Leviticus',    abbr:'Lev',  testament:'Old', category:'Books of Law',      chapters:27},
+  {id:4,  name:'Numbers',      abbr:'Num',  testament:'Old', category:'Books of Law',      chapters:36},
+  {id:5,  name:'Deuteronomy',  abbr:'Deut', testament:'Old', category:'Books of Law',      chapters:34},
+  {id:6,  name:'Joshua',       abbr:'Josh', testament:'Old', category:'Books of History',  chapters:24},
+  {id:7,  name:'Judges',       abbr:'Judg', testament:'Old', category:'Books of History',  chapters:21},
+  {id:8,  name:'Ruth',         abbr:'Ruth', testament:'Old', category:'Books of History',  chapters:4},
+  {id:9,  name:'1 Samuel',     abbr:'1Sam', testament:'Old', category:'Books of History',  chapters:31},
+  {id:10, name:'2 Samuel',     abbr:'2Sam', testament:'Old', category:'Books of History',  chapters:24},
+  // NEW TESTAMENT
+  {id:40, name:'Matthew',      abbr:'Matt', testament:'New', category:'The Gospels',       chapters:28},
+  {id:41, name:'Mark',         abbr:'Mark', testament:'New', category:'The Gospels',       chapters:16},
+  {id:42, name:'Luke',         abbr:'Luke', testament:'New', category:'The Gospels',       chapters:24},
+  {id:43, name:'John',         abbr:'John', testament:'New', category:'The Gospels',       chapters:21},
+  {id:44, name:'Acts',         abbr:'Acts', testament:'New', category:'History',           chapters:28},
+  {id:45, name:'Romans',       abbr:'Rom',  testament:'New', category:'Pauline Epistles',  chapters:16},
+];
+
+// Mock verse text (in a real app, this comes from the SQLite DB)
+function getChapterText(bookName, chapterNum) {
+  const verses = [];
+  for (let i = 1; i <= 10; i++) {
+    verses.push(`This is verse ${i} of ${bookName} chapter ${chapterNum}. In the complete offline database, this would contain the actual full scripture text of the Holy Bible. The application is designed to be 100% offline, storing the entire KJV or ESV translation locally on your device.`);
+  }
+  return verses;
+}
+
+/* =========================================================
+   2. APP STATE
+   ========================================================= */
+const state = {
+  testament: 'Old',
+  searchQuery: '',
+  currentScreen: 'bible',
+  currentBook: null,
+  currentChapter: 1,
+  darkMode: false,
+  lastReadBookId: 9,
+  lastReadChapter: 10,
+  speechUtterance: null,
+  isSpeaking: false,
+};
+
+/* =========================================================
+   3. NAVIGATION
+   ========================================================= */
+function navigate(screen) {
+  state.currentScreen = screen;
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + screen).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector(`.nav-item[data-screen="${screen}"]`).classList.add('active');
+
+  const titles = {bible:'Bible', chat:'Local AI Chat', daily:'Daily Verses', audio:'Audio Bible', plan:'Reading Plan'};
+  document.getElementById('headerTitle').textContent = titles[screen] || 'Bible';
+
+  if (screen === 'daily') renderDailyVerse();
+  if (screen === 'plan') renderReadingPlan();
+  if (screen === 'audio') updateAudioTitle();
+}
+
+/* =========================================================
+   4. BIBLE LIBRARY RENDERING
+   ========================================================= */
+function switchTestament(t) {
+  state.testament = t;
+  document.getElementById('btnOld').classList.toggle('active', t === 'Old');
+  document.getElementById('btnNew').classList.toggle('active', t === 'New');
+  document.getElementById('testamentTitle').textContent = t + ' Testament';
+  renderBooks();
+}
+
+function renderBooks() {
+  const q = document.getElementById('filterInput').value.toLowerCase().trim();
+  const filtered = BIBLE_BOOKS.filter(b =>
+    b.testament === state.testament &&
+    (!q || b.name.toLowerCase().includes(q) || b.abbr.toLowerCase().includes(q))
+  );
+
+  // Group by category
+  const groups = {};
+  filtered.forEach(b => {
+    if (!groups[b.category]) groups[b.category] = [];
+    groups[b.category].push(b);
+  });
+
+  const container = document.getElementById('bookList');
+  if (filtered.length === 0) {
+    container.innerHTML = '<div style="text-align:center; padding:40px; color:#9ca3af;">No books found.</div>';
+    return;
+  }
+
+  let html = '';
+  for (const cat in groups) {
+    html += `<div class="category-title">${cat}</div>`;
+    groups[cat].forEach(b => {
+      html += `
+        <div class="book-item" onclick="openBook(${b.id})">
+          <div class="book-num">${String(b.id).padStart(2, '0')}</div>
+          <div class="book-info">
+            <div class="book-name">${b.name} (${b.abbr})</div>
+            <div class="book-chapters">${b.chapters} CHAPTERS</div>
+          </div>
+          <div class="book-arrow">›</div>
+        </div>`;
+    });
+  }
+  container.innerHTML = html;
+}
+
+function updateContinueCard() {
+  const book = BIBLE_BOOKS.find(b => b.id === state.lastReadBookId);
+  if (book) {
+    document.getElementById('continueSub').textContent = `${book.name} Chapter ${state.lastReadChapter}`;
+  }
+}
+
+function continueReading() {
+  const book = BIBLE_BOOKS.find(b => b.id === state.lastReadBookId);
+  if (book) openReading(book, state.lastReadChapter);
+}
+
+/* =========================================================
+   5. READING VIEW
+   ========================================================= */
+function openBook(id) {
+  const book = BIBLE_BOOKS.find(b => b.id === id);
+  if (book) openReading(book, 1);
+}
+
+function openReading(book, chapter) {
+  state.currentBook = book;
+  state.currentChapter = chapter;
+  state.lastReadBookId = book.id;
+  state.lastReadChapter = chapter;
+  updateContinueCard();
+
+  document.getElementById('screen-bible').classList.remove('active');
+  document.getElementById('screen-reading').classList.add('active');
+  document.getElementById('headerTitle').textContent = `${book.name} ${chapter}`;
+  renderReading();
+}
+
+function closeReading() {
+  document.getElementById('screen-reading').classList.remove('active');
+  document.getElementById('screen-bible').classList.add('active');
+  document.getElementById('headerTitle').textContent = 'Bible';
+}
+
+function renderReading() {
+  const book = state.currentBook;
+  const ch = state.currentChapter;
+  document.getElementById('readingTitle').textContent = `${book.name} ${ch}`;
+  document.getElementById('headerTitle').textContent = `${book.name} ${ch}`;
+
+  const verses = getChapterText(book.name, ch);
+  let html = `<h3>Chapter ${ch}</h3>`;
+  verses.forEach((v, i) => {
+    html += `<p class="verse-line"><span class="verse-num">${i+1}</span>${v}</p>`;
+  });
+  document.getElementById('readingBody').innerHTML = html;
+  document.getElementById('readingBody').scrollTop = 0;
+
+  document.getElementById('prevBtn').disabled = ch <= 1;
+  document.getElementById('nextBtn').disabled = ch >= book.chapters;
+}
+
+function changeChapter(delta) {
+  const newCh = state.currentChapter + delta;
+  if (newCh >= 1 && newCh <= state.currentBook.chapters) {
+    state.currentChapter = newCh;
+    state.lastReadChapter = newCh;
+    renderReading();
+  }
+}
+
+function openChapters() {
+  const book = state.currentBook;
+  let html = `<h3>${book.name} — Chapters</h3><div class="chapter-grid">`;
+  for (let i = 1; i <= book.chapters; i++) {
+    html += `<div class="chapter-cell" onclick="pickChapter(${i})">${i}</div>`;
+  }
+  html += '</div>';
+  showModal(html);
+}
+
+function pickChapter(n) {
+  state.currentChapter = n;
+  state.lastReadChapter = n;
+  closeModal();
+  renderReading();
+}
+
+/* =========================================================
+   6. LOCAL AI CHAT (Simulated Local RAG)
+   ========================================================= */
+function sendChat() {
+  const input = document.getElementById('chatInput');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  appendMsg('user', text);
+
+  // Simulated local AI response (in a real app, this would query a local LLM + vector DB)
+  setTimeout(() => {
+    const response = generateLocalResponse(text);
+    appendMsg('ai', response);
+  }, 600);
+}
+
+function appendMsg(role, text) {
+  const container = document.getElementById('chatMessages');
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.textContent = text;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+}
+
+function generateLocalResponse(query) {
+  const q = query.toLowerCase();
+  // Simple keyword-based local search across the offline Bible database
+  const hits = [];
+  BIBLE_BOOKS.forEach(b => {
+    if (q.includes(b.name.toLowerCase())) hits.push(b.name);
+  });
+
+  if (q.includes('anxiety') || q.includes('fear') || q.includes('worry')) {
+    return 'A relevant scripture found in your offline Bible: "Cast all your anxiety on him because he cares for you." — 1 Peter 5:7 (KJV). This response was generated locally using the on-device scripture index.';
+  }
+  if (q.includes('love')) {
+    return 'A relevant scripture found in your offline Bible: "For God so loved the world, that he gave his only begotten Son..." — John 3:16 (KJV). Generated locally from the on-device database.';
+  }
+  if (q.includes('peace')) {
+    return 'A relevant scripture: "Peace I leave with you, my peace I give unto you..." — John 14:27 (KJV). This is an offline response from the local scripture index.';
+  }
+  if (hits.length) {
+    return `I found references to ${hits.join(', ')} in your local Bible database. For the complete offline AI experience, a quantized LLM (Phi-3-mini or Gemma-2B) would be loaded here to give a full theological answer without any internet connection.`;
+  }
+  return 'This is a simulated local response. In the complete offline app, a quantized LLM (Phi-3-mini / Gemma-2B) would run directly on your device using llama.cpp, with RAG grounded in the embedded Bible text. No internet connection is ever required.';
+}
+
+/* =========================================================
+   7. DAILY VERSE
+   ========================================================= */
+function renderDailyVerse() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now - start) / 86400000);
+  const book = BIBLE_BOOKS[dayOfYear % BIBLE_BOOKS.length];
+  const ch = (dayOfYear % book.chapters) + 1;
+
+  document.getElementById('dailyVerseText').textContent =
+    `"This is a simulated daily verse from ${book.name} Chapter ${ch}. The actual verse text would be pulled dynamically from the local offline database."`;
+  document.getElementById('dailyVerseRef').textContent = `— ${book.name} ${ch}:1`;
+}
+
+/* =========================================================
+   8. AUDIO BIBLE (Native Offline TTS)
+   ========================================================= */
+function updateAudioTitle() {
+  const book = BIBLE_BOOKS.find(b => b.id === state.lastReadBookId);
+  if (book) {
+    document.getElementById('audioTitle').textContent = `${book.name} Chapter ${state.lastReadChapter}`;
+  }
+}
+
+function toggleSpeech() {
+  if (state.isSpeaking) {
+    window.speechSynthesis.cancel();
+    state.isSpeaking = false;
+    updatePlayIcon();
+  } else {
+    speakCurrentChapter();
+  }
+}
+
+function speakCurrentChapter() {
+  if (!('speechSynthesis' in window)) {
+    alert('Text-to-Speech is not supported on this browser. In the mobile app, native offline TTS is used.');
+    return;
+  }
+  window.speechSynthesis.cancel();
+  const book = BIBLE_BOOKS.find(b => b.id === state.lastReadBookId);
+  const verses = getChapterText(book.name, state.lastReadChapter);
+  const text = `${book.name}, chapter ${state.lastReadChapter}. ` + verses.join(' ');
+
+  const u = new SpeechSynthesisUtterance(text);
+  const speed = parseFloat(document.getElementById('speedSelect').value);
+  u.rate = speed;
+  u.onend = () => { state.isSpeaking = false; updatePlayIcon(); };
+  state.speechUtterance = u;
+  state.isSpeaking = true;
+  updatePlayIcon();
+  window.speechSynthesis.speak(u);
+}
+
+function updatePlayIcon() {
+  const btn = document.getElementById('playBtn');
+  btn.innerHTML = state.isSpeaking
+    ? '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>';
+}
+
+function speakPrev() {
+  if (state.lastReadChapter > 1) {
+    state.lastReadChapter--;
+    updateAudioTitle();
+    if (state.isSpeaking) speakCurrentChapter();
+  }
+}
+
+function speakNext() {
+  const book = BIBLE_BOOKS.find(b => b.id === state.lastReadBookId);
+  if (state.lastReadChapter < book.chapters) {
+    state.lastReadChapter++;
+    updateAudioTitle();
+    if (state.isSpeaking) speakCurrentChapter();
+  }
+}
+
+/* =========================================================
+   9. READING PLAN (365-Day Local Generator)
+   ========================================================= */
+function renderReadingPlan() {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.max(1, Math.floor((now - start) / 86400000));
+  const progress = Math.min(1, dayOfYear / 365);
+
+  document.getElementById('planDayLabel').textContent = `Day ${dayOfYear} of 365`;
+  document.getElementById('planFill').style.width = (progress * 100).toFixed(1) + '%';
+  document.getElementById('planPercent').textContent = (progress * 100).toFixed(1) + '% Complete';
+
+  // Dynamic plan generation from the local Bible database
+  const readings = [];
+  let chapterCounter = 0;
+  for (const book of BIBLE_BOOKS) {
+    for (let ch = 1; ch <= book.chapters; ch++) {
+      readings.push({ book: book.name, chapter: ch });
+      chapterCounter++;
+    }
+  }
+
+  const todayIndex = (dayOfYear - 1) * 3;
+  const today = readings.slice(todayIndex, todayIndex + 3);
+  const tomorrow = readings.slice(todayIndex + 3, todayIndex + 6);
+
+  const formatReading = (arr) => {
+    if (!arr.length) return '—';
+    const first = arr[0], last = arr[arr.length - 1];
+    if (first.book === last.book) return `${first.book} ${first.chapter} - ${last.chapter}`;
+    return `${first.book} ${first.chapter} - ${last.book} ${last.chapter}`;
+  };
+
+  document.getElementById('planList').innerHTML = `
+    <div class="plan-item" onclick="openPlanReading('today')">
+      <div class="plan-day">${dayOfYear}</div>
+      <div class="plan-info">
+        <div class="plan-title">${formatReading(today)}</div>
+        <div class="plan-sub">Today's Reading</div>
+      </div>
+      <div class="plan-status">✓</div>
+    </div>
+    <div class="plan-item">
+      <div class="plan-day locked">${dayOfYear + 1}</div>
+      <div class="plan-info">
+        <div class="plan-title">${formatReading(tomorrow)}</div>
+        <div class="plan-sub">Tomorrow</div>
+      </div>
+      <div class="plan-status">🔒</div>
+    </div>
+  `;
+}
+
+function openPlanReading(day) {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 0);
+  const dayOfYear = Math.floor((now - start) / 86400000);
+  const readings = [];
+  for (const book of BIBLE_BOOKS) {
+    for (let ch = 1; ch <= book.chapters; ch++) readings.push({book, ch});
+  }
+  const idx = (dayOfYear - 1) * 3;
+  if (readings[idx]) {
+    openReading(readings[idx].book, readings[idx].ch);
+  }
+}
+
+/* =========================================================
+   10. SETTINGS MODAL
+   ========================================================= */
+function openSettings() {
+  showModal(`
+    <h3>Settings</h3>
+    <div class="modal-row">
+      <span>Dark Mode</span>
+      <div class="switch ${state.darkMode ? 'on' : ''}" onclick="toggleDark()"></div>
+    </div>
+    <div class="modal-row">
+      <span>Translation</span>
+      <span style="color:#2563eb;">KJV (Offline)</span>
+    </div>
+    <div class="modal-row" onclick="alert('Offline Bible App v1.0')">
+      <span>About Offline Bible</span>
+      <span style="color:#9ca3af;">›</span>
+    </div>
+  `);
+}
+
+function toggleDark() {
+  state.darkMode = !state.darkMode;
+  document.body.classList.toggle('dark', state.darkMode);
+  closeModal();
+}
+
+/* =========================================================
+   11. SEARCH MODAL
+   ========================================================= */
+function openSearch() {
+  showModal(`
+    <h3>Search the Bible</h3>
+    <input type="text" id="searchInput" placeholder="Type a book name..." 
+      style="width:100%; padding:12px 16px; border:none; background:#f0f0f0; border-radius:10px; font-size:15px; outline:none; margin-bottom:14px;"
+      oninput="runSearch()">
+    <div id="searchResults"></div>
+  `);
+  setTimeout(() => document.getElementById('searchInput').focus(), 100);
+}
+
+function runSearch() {
+  const q = document.getElementById('searchInput').value.toLowerCase().trim();
+  const results = document.getElementById('searchResults');
+  if (!q) { results.innerHTML = ''; return; }
+
+  const matches = BIBLE_BOOKS.filter(b =>
+    b.name.toLowerCase().includes(q) || b.abbr.toLowerCase().includes(q)
+  );
+
+  if (!matches.length) {
+    results.innerHTML = '<div style="padding:20px; text-align:center; color:#9ca3af;">No results.</div>';
+    return;
+  }
+
+  results.innerHTML = matches.map(b => `
+    <div class="book-item" onclick="searchPick(${b.id})">
+      <div class="book-num">${String(b.id).padStart(2,'0')}</div>
+      <div class="book-info">
+        <div class="book-name">${b.name} (${b.abbr})</div>
+        <div class="book-chapters">${b.chapters} CHAPTERS · ${b.testament} Testament</div>
+      </div>
+      <div class="book-arrow">›</div>
+    </div>
+  `).join('');
+}
+
+function searchPick(id) {
+  closeModal();
+  const book = BIBLE_BOOKS.find(b => b.id === id);
+  openReading(book, 1);
+}
+
+/* =========================================================
+   12. MODAL HELPERS
+   ========================================================= */
+function showModal(html) {
+  document.getElementById('modalContent').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('active');
+}
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('active');
+}
+
+/* =========================================================
+   13. INIT
+   ========================================================= */
+window.addEventListener('load', () => {
+  renderBooks();
+  updateContinueCard();
+  renderDailyVerse();
+  updateAudioTitle();
+  renderReadingPlan();
+});
+</script>
+
+</body>
+</html>
