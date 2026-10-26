@@ -1,0 +1,1039 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Naira Floor</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* Layout: a mobile brokerage app. Login, then Market, Stock detail, Portfolio and Wallet in one centred column with a bottom tab bar. */
+:root{
+  --bg:#ffffff; --surface:#f5f7fa; --surface2:#eaeef4; --line:#e3e7ee;
+  --fg:#1c2433; --muted:#64708a; --accent:#1c5bd8; --accent-soft:#e6eefc;
+  --up:#16894a; --down:#d12f2f; --up-soft:#e2f4e9; --down-soft:#fbe5e5; --on-trade:#ffffff; --on-accent:#ffffff;
+  --warn:#8a5a00; --warn-soft:#fdf1d8;
+  --wc-bg:#10305f; --wc-fg:#ffffff; --wc-muted:#b6c5e0; --wc-line:#2a4a80;
+  --tile-s:62%; --tile-bg-l:91%; --tile-fg-l:30%;
+  --f-ui:'Figtree',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0b0f15; --surface:#131923; --surface2:#1b2330; --line:#232d3b;
+    --fg:#e7ecf4; --muted:#8c99ad; --accent:#6ea6ff; --accent-soft:#16233d;
+    --up:#3fcf82; --down:#ff6b6b; --up-soft:#0f2a1d; --down-soft:#321517; --on-trade:#07130c; --on-accent:#08101f;
+    --warn:#f0c15a; --warn-soft:#2b2410;
+    --wc-bg:#16305c; --wc-fg:#ffffff; --wc-muted:#aebfdc; --wc-line:#2c4a7c;
+    --tile-s:38%; --tile-bg-l:21%; --tile-fg-l:76%;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0b0f15; --surface:#131923; --surface2:#1b2330; --line:#232d3b;
+  --fg:#e7ecf4; --muted:#8c99ad; --accent:#6ea6ff; --accent-soft:#16233d;
+  --up:#3fcf82; --down:#ff6b6b; --up-soft:#0f2a1d; --down-soft:#321517; --on-trade:#07130c; --on-accent:#08101f;
+  --warn:#f0c15a; --warn-soft:#2b2410;
+  --wc-bg:#16305c; --wc-fg:#ffffff; --wc-muted:#aebfdc; --wc-line:#2c4a7c;
+  --tile-s:38%; --tile-bg-l:21%; --tile-fg-l:76%;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--fg); font-family:var(--f-ui); font-size:15px; line-height:1.45;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  -webkit-tap-highlight-color:transparent;
+}
+.shell{max-width:640px;margin:0 auto;padding-block:20px 120px}
+h1,h2,h3,p{margin:0}
+h1{font-size:30px;font-weight:800;letter-spacing:-.02em;line-height:1.1}
+h2{font-size:17px;font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer;-webkit-appearance:none;appearance:none}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.up{color:var(--up)} .down{color:var(--down)} .flat{color:var(--muted)}
+.eyebrow{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.sub{color:var(--muted);font-size:14px;margin-top:4px}
+.num{font-variant-numeric:tabular-nums}
+[hidden]{display:none!important}
+
+/* ---------- login ---------- */
+.login{min-height:calc(100vh - 80px);display:flex;flex-direction:column;justify-content:center;gap:24px;padding-block:24px}
+.login .mark{display:flex;align-items:center;gap:12px}
+.login .mark svg{flex:none}
+.login h1{font-size:34px}
+.login .lead{font-size:17px;color:var(--muted);max-width:34ch}
+.login form{display:flex;flex-direction:column;gap:14px;background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:20px}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:600;color:var(--muted)}
+.field input{width:100%;font:inherit;font-size:17px;padding:13px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg)}
+.formerr{font-size:13px;color:var(--down);min-height:18px}
+.primary{border:0;border-radius:12px;padding:14px;font-weight:700;font-size:16px;background:var(--accent);color:var(--on-accent)}
+.login .fine{margin:0}
+.perks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.perks div{display:flex;flex-direction:column;gap:2px;font-size:13px;color:var(--muted)}
+.perks b{font-size:15px;color:var(--fg)}
+
+/* ---------- market ---------- */
+.mh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.chip-wallet{display:flex;flex-direction:column;align-items:flex-end;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 12px;text-align:right;min-width:0}
+.chip-wallet span{font-size:11px;color:var(--muted);font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+.chip-wallet b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums}
+.banner{display:flex;gap:10px;align-items:flex-start;margin-top:16px;padding:10px 12px;border-radius:10px;background:var(--surface);border:1px solid var(--line);font-size:13px;color:var(--muted)}
+.banner b{color:var(--fg);font-weight:600}
+.banner .dot{flex:none;width:8px;height:8px;border-radius:50%;background:var(--up);margin-top:6px}
+.banner.old{background:var(--warn-soft);border-color:transparent;color:var(--warn)}
+.banner.old b{color:var(--warn)}
+.banner.old .dot{background:var(--warn)}
+.search{position:relative;margin-top:14px}
+.search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none}
+.search input{width:100%;padding:13px 14px 13px 42px;border:1px solid var(--line);background:var(--surface);color:var(--fg);border-radius:12px;font:inherit;font-size:16px}
+.filters{display:flex;gap:8px;margin-top:12px;overflow-x:auto}
+.filters button{flex:none;border:1px solid var(--line);background:transparent;border-radius:99px;padding:6px 14px;font-size:13px;font-weight:600;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.count{font-size:12px;color:var(--muted);margin-top:12px}
+.list{display:flex;flex-direction:column;margin-top:4px}
+.row{display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;gap:16px;width:100%;text-align:left;background:transparent;border:0;border-bottom:1px solid var(--line);padding:16px 0}
+.row:last-child{border-bottom:0}
+.row:active{background:var(--surface)}
+.logo{position:relative;overflow:hidden;width:48px;height:48px;border-radius:10px;border:1px solid var(--line);display:grid;place-items:center;font-weight:800;font-size:16px;letter-spacing:-.02em;background:hsl(var(--h) var(--tile-s) var(--tile-bg-l));color:hsl(var(--h) 60% var(--tile-fg-l))}
+.rn{display:flex;flex-direction:column;min-width:0;gap:2px}
+.rn .top{display:flex;align-items:center;gap:8px;min-width:0}
+.rn b{font-size:18px;font-weight:500;letter-spacing:.01em}
+.rn small{color:var(--muted);font-size:13px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:800;letter-spacing:.06em;color:var(--up)}
+.live::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--up)}
+.rp{display:flex;flex-direction:column;align-items:flex-end}
+.rp b{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.rp em{font-style:normal;font-size:14px;font-variant-numeric:tabular-nums}
+.empty{padding:36px 8px;text-align:center;color:var(--muted)}
+.empty b{display:block;color:var(--fg);font-size:17px;margin-bottom:4px}
+.fine{color:var(--muted);font-size:12px;margin-top:24px}
+
+/* ---------- stock detail ---------- */
+.dh{display:flex;align-items:center;gap:12px}
+.back{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:var(--surface);display:grid;place-items:center;flex:none}
+.dtitle{display:flex;flex-direction:column;min-width:0;flex:1}
+.dtitle b{font-size:18px;font-weight:700}
+.dtitle small{color:var(--muted);font-size:12px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dprice{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 12px;margin-top:20px}
+.dprice b{font-size:38px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pill{font-size:13px;font-weight:600;padding:3px 9px;border-radius:7px;font-variant-numeric:tabular-nums}
+.pill.up{background:var(--up-soft)} .pill.down{background:var(--down-soft)} .pill.flat{background:var(--surface2)}
+.status{font-size:13px;color:var(--muted);margin-top:6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.tvbox{height:440px;width:100%}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;margin-top:16px}
+.card h3{font-size:15px;font-weight:700;margin-bottom:10px}
+.mrow{display:grid;grid-template-columns:72px minmax(0,1fr) 72px;align-items:center;gap:10px;padding:6px 0;font-size:14px}
+.mrow span{color:var(--muted)}
+.mrow em{font-style:normal;text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.mtrack{position:relative;height:10px;background:var(--surface2);border-radius:5px}
+.mtrack .mid{position:absolute;left:50%;top:-2px;bottom:-2px;width:1px;background:var(--muted);opacity:.6}
+.mfill{position:absolute;top:0;bottom:0;border-radius:5px}
+.mfill.up{background:var(--up)} .mfill.down{background:var(--down)}
+.kv{display:grid;gap:8px;margin:0}
+.kv div{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.kv dt{color:var(--muted)} .kv dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.note{font-size:12px;color:var(--muted);margin-top:10px}
+
+.actionbar,.tabbar{position:fixed;left:0;right:0;bottom:0;background:var(--bg);border-top:1px solid var(--line);z-index:10;
+  padding:10px max(16px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.actionbar .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.cta{border:0;border-radius:12px;padding:14px;font-weight:700;font-size:16px;color:var(--on-trade)}
+.cta.buy{background:var(--up)} .cta.sell{background:var(--down)}
+.cta:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed}
+.tabbar .in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+.tabbar button{background:transparent;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0;font-size:12px;font-weight:600;color:var(--muted);border-radius:10px}
+.tabbar button[aria-current="page"]{color:var(--accent)}
+.tabbar svg{display:block}
+
+/* ---------- portfolio + wallet ---------- */
+.sumcard{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;margin-top:16px;display:flex;flex-direction:column;gap:4px}
+.sumcard .big{font-size:32px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.sumcard .line{font-size:14px;font-variant-numeric:tabular-nums}
+.sechead{display:flex;justify-content:space-between;align-items:baseline;margin-top:28px}
+.balcard{background:var(--wc-bg);color:var(--wc-fg);border-radius:18px;padding:20px;margin-top:16px;display:flex;flex-direction:column;gap:4px}
+.balcard .lbl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--wc-muted);font-weight:600}
+.balcard .big{font-size:38px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.balcard .hint{font-size:13px;color:var(--wc-muted)}
+.balgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:16px;padding-top:16px;border-top:1px solid var(--wc-line)}
+.balgrid div{display:flex;flex-direction:column;gap:2px;min-width:0}
+.balgrid span{font-size:12px;color:var(--wc-muted)}
+.balgrid b{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.balgrid .gain{color:#7ee2a8} .balgrid .loss{color:#ff9a95}
+.upgrade{margin-top:16px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:14px}
+.upgrade h2{font-size:18px}
+.tiers{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.tier{border:1px solid var(--line);background:var(--bg);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:2px}
+.tier b{font-size:20px;font-weight:800;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.tier span{font-size:13px;color:var(--muted)}
+.tier strong{font-size:15px;color:var(--accent);font-variant-numeric:tabular-nums}
+.tg{display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none;background:var(--accent);color:var(--on-accent);border-radius:12px;padding:13px;font-weight:700;font-size:16px}
+.tg svg{flex:none}
+.idcard{margin-top:16px;border:1px solid var(--line);background:var(--surface);border-radius:16px;padding:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.idcard .idv{font-size:24px;font-weight:800;letter-spacing:.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.idcard small{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.redeem{display:flex;flex-direction:column;gap:10px;border-top:1px solid var(--line);padding-top:14px}
+.redeem label{font-size:13px;font-weight:600;color:var(--muted)}
+.redeem .rw{display:flex;gap:8px}
+.redeem input{flex:1;min-width:0;font:inherit;font-size:15px;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg)}
+.redeem .msg{font-size:13px;min-height:18px;color:var(--muted)}
+.redeem .msg.bad{color:var(--down)} .redeem .msg.good{color:var(--up)}
+.redeem .apply{flex:none;border:0;border-radius:12px;padding:0 18px;font-weight:700;background:var(--fg);color:var(--bg)}
+.tx{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:14px;align-items:center;padding:14px 0;border-bottom:1px solid var(--line)}
+.tx:last-child{border-bottom:0}
+.txi{width:40px;height:40px;border-radius:50%;display:grid;place-items:center}
+.txi.in{background:var(--up-soft);color:var(--up)} .txi.out{background:var(--down-soft);color:var(--down)}
+.txm{display:flex;flex-direction:column;min-width:0}
+.txm b{font-weight:600;font-size:15px}
+.txm small{color:var(--muted);font-size:13px}
+.txa{text-align:right;display:flex;flex-direction:column;font-weight:700;font-variant-numeric:tabular-nums}
+.txa small{font-weight:500;font-size:12px}
+.acct{margin-top:28px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--muted)}
+.btn{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 14px;font-size:14px;font-weight:600}
+.btn.danger{background:var(--down);border-color:var(--down);color:var(--on-trade)}
+
+/* ---------- order sheet ---------- */
+.scrim{position:fixed;inset:0;background:rgba(8,12,20,.55);z-index:30}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:31;background:var(--bg);border-radius:20px 20px 0 0;border-top:1px solid var(--line);
+  padding:12px max(20px,env(safe-area-inset-right,0px)) calc(20px + env(safe-area-inset-bottom,0px)) max(20px,env(safe-area-inset-left,0px));max-height:92%;overflow-y:auto}
+.sheet .in{max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+.grab{width:40px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 4px}
+.sh-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.sh-head h2{font-size:20px}
+.sheet label{font-size:13px;font-weight:600;color:var(--muted)}
+.sheet input{width:100%;font:inherit;font-size:24px;font-weight:600;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--surface);color:var(--fg);margin-top:6px;font-variant-numeric:tabular-nums}
+.seg{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:3px;gap:2px}
+.seg button{border:0;background:transparent;padding:9px 12px;border-radius:7px;font-size:14px;font-weight:600;color:var(--muted)}
+.seg button.b[aria-pressed="true"]{background:var(--up);color:var(--on-trade)}
+.seg button.s[aria-pressed="true"]{background:var(--down);color:var(--on-trade)}
+.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.quick button{background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 0;font-size:13px;font-weight:600;color:var(--muted)}
+.sum{margin:0;display:grid;gap:8px;border-top:1px dashed var(--line);padding-top:12px}
+.sum div{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.sum dt{color:var(--muted)} .sum dd{margin:0;font-weight:600;font-variant-numeric:tabular-nums;text-align:right}
+.sum .tot dt,.sum .tot dd{color:var(--fg);font-size:16px;font-weight:700}
+.shnote{font-size:13px;color:var(--muted);min-height:18px}
+.shnote.warn{color:var(--down)}
+.cancel{background:transparent;border:0;color:var(--muted);font-weight:600;padding:6px}
+
+#toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom,0px));transform:translate(-50%,16px);opacity:0;pointer-events:none;background:var(--fg);color:var(--bg);padding:11px 16px;border-radius:12px;font-size:14px;font-weight:500;max-width:min(92vw,460px);transition:opacity .2s,transform .2s;z-index:40;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+@media (max-width:420px){
+  h1{font-size:26px}
+  .login h1{font-size:30px}
+  .balcard .big{font-size:32px}
+  .row{gap:14px}
+  .mrow{grid-template-columns:60px minmax(0,1fr) 64px}
+  .tiers{grid-template-columns:minmax(0,1fr)}
+}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+.logo .tvl{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;background:#fff}
+</style>
+</head>
+<body>
+
+
+<div class="shell">
+
+  <!-- LOGIN -->
+  <section id="v-login" class="login" aria-label="Log in" hidden>
+    <div>
+      <div class="mark">
+        <svg width="44" height="44" viewBox="0 0 40 40" aria-hidden="true">
+          <rect x="2" y="2" width="36" height="36" rx="9" style="fill:var(--surface2)"/>
+          <path d="M11 10v20M20 7v22M29 12v21" style="stroke:var(--muted)" stroke-width="1.5"/>
+          <rect x="8" y="16" width="6" height="9" style="fill:var(--up)"/>
+          <rect x="17" y="12" width="6" height="11" style="fill:var(--down)"/>
+          <rect x="26" y="18" width="6" height="10" style="fill:var(--up)"/>
+        </svg>
+        <h1>Naira Floor</h1>
+      </div>
+      <p class="lead" style="margin-top:14px">Learn to trade Nigerian stocks at real market prices, using practice money.</p>
+    </div>
+    <form id="loginForm" novalidate>
+      <div class="field"><label for="lname">Your name</label><input id="lname" type="text" autocomplete="name" placeholder="e.g. Amina Bello" maxlength="40"></div>
+      <div class="field"><label for="lphone">Phone number</label><input id="lphone" type="tel" inputmode="tel" autocomplete="tel" placeholder="e.g. 08012345678" maxlength="18"></div>
+      <p class="formerr" id="lerr" role="alert"></p>
+      <button class="primary" type="submit">Start trading with ₦20,000</button>
+    </form>
+    <div class="perks">
+      <div><b>146 stocks</b>Every NGX listing</div>
+      <div><b>Real prices</b>Same as the market</div>
+      <div><b>₦20,000</b>Practice wallet</div>
+    </div>
+    <p class="fine">Your details are saved on this device only. Logging in again with the same phone number brings back your wallet and trades.</p>
+  </section>
+
+  <!-- MARKET -->
+  <section id="v-market" aria-label="Market" hidden>
+    <div class="mh">
+      <div><h1>Market</h1><p class="sub" id="hello">Nigerian Exchange</p></div>
+      <button class="chip-wallet" data-go="wallet" aria-label="Open wallet"><span>Wallet</span><b id="chipCash">₦0</b></button>
+    </div>
+    <div class="banner" id="banner"></div>
+    <div class="search">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <input id="search" type="search" placeholder="Search all stocks" autocomplete="off" aria-label="Search stocks">
+    </div>
+    <div class="filters" id="filters" role="group" aria-label="Filter">
+      <button data-f="all" aria-pressed="true">All</button>
+      <button data-f="up" aria-pressed="false">Gainers</button>
+      <button data-f="down" aria-pressed="false">Losers</button>
+      <button data-f="held" aria-pressed="false">I own</button>
+    </div>
+    <p class="count" id="count"></p>
+    <div class="list" id="mlist"></div>
+    <p class="fine">Prices come from Kobo Terminal, which reports NGX prices with a delay of at least 30 minutes. Practice orders fill at the price shown. Nothing here is financial advice.</p>
+  </section>
+
+  <!-- STOCK DETAIL -->
+  <section id="v-detail" aria-label="Stock detail" hidden>
+    <div class="dh">
+      <button class="back" id="back" aria-label="Back"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 5l-7 7 7 7"/></svg></button>
+      <div class="dtitle"><b id="dSym"></b><small id="dName"></small></div>
+    </div>
+    <div class="dprice"><b id="dPx">₦0.00</b><span class="pill" id="dChg"></span></div>
+    <p class="status" id="dStatus"></p>
+    <div class="card" id="tvcard" hidden><div class="tvbox" id="tv"></div><p class="note" style="margin-top:8px">Real candlestick chart by TradingView. Use the toolbar to change the time range.</p></div>
+    <div class="card" id="dfacts"></div>
+    <div class="card" id="momentum"></div>
+    <div class="card" id="position"></div>
+  </section>
+
+  <!-- PORTFOLIO -->
+  <section id="v-portfolio" aria-label="Portfolio" hidden></section>
+
+  <!-- WALLET -->
+  <section id="v-wallet" aria-label="Wallet" hidden></section>
+</div>
+
+<div class="actionbar" id="actionbar" hidden>
+  <div class="in">
+    <button class="cta buy" id="openBuy">Buy</button>
+    <button class="cta sell" id="openSell">Sell</button>
+  </div>
+</div>
+
+<nav class="tabbar" id="tabbar" aria-label="Main" hidden>
+  <div class="in">
+    <button data-go="market" aria-current="page"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 20V9M12 20V4M18 20v-8"/></svg>Market</button>
+    <button data-go="portfolio" aria-current="false"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9h-9z"/><path d="M15.5 3.6A9 9 0 0 1 20.4 8.5h-4.9z"/></svg>Portfolio</button>
+    <button data-go="wallet" aria-current="false"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="6" width="18" height="14" rx="3"/><path d="M3 10h18"/><circle cx="16.5" cy="15" r="1"/></svg>Wallet</button>
+  </div>
+</nav>
+
+<div class="scrim" id="scrim" hidden></div>
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="shTitle" hidden>
+  <div class="in">
+    <div class="grab"></div>
+    <div class="sh-head"><h2 id="shTitle">Buy</h2><span class="num" id="shPx"></span></div>
+    <div class="seg" role="group" aria-label="Order type">
+      <button class="b" id="shBuy" aria-pressed="true">Buy</button>
+      <button class="s" id="shSell" aria-pressed="false">Sell</button>
+    </div>
+    <div>
+      <label for="qty">Number of shares</label>
+      <input id="qty" type="number" min="1" step="1" inputmode="numeric" placeholder="0" autocomplete="off">
+    </div>
+    <div class="quick" id="quick">
+      <button data-p="0.25">25%</button><button data-p="0.5">50%</button><button data-p="0.75">75%</button><button data-p="1">Max</button>
+    </div>
+    <dl class="sum">
+      <div><dt>Price per share</dt><dd id="sPrice">—</dd></div>
+      <div><dt id="sAvailL">Wallet available</dt><dd id="sAvail">—</dd></div>
+      <div class="tot"><dt id="sTotalL">Order total</dt><dd id="sTotal">—</dd></div>
+      <div><dt>Wallet after order</dt><dd id="sAfter">—</dd></div>
+    </dl>
+    <button class="cta buy" id="shGo" disabled>Buy</button>
+    <p class="shnote" id="shNote"></p>
+    <button class="cancel" id="shCancel">Cancel</button>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+'use strict';
+const START_CASH=20000;
+const KEY_ACCTS='naira-floor-accounts-v3';
+const KEY_SESSION='naira-floor-session-v3';
+const TG_URL='https://t.me/+2349133750885';
+const PUB={"kty":"EC","crv":"P-256","x":"EQMHS8ksoNWMXXgpr61mxcA3rRufNUAxg_CUCLsJfsw","y":"YlIBKA0HOTy5Os2NbbyVNkcaOam7ik5nCYL_1vyD_24"};
+const B32='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const TIERS={'1M':1000000,'5M':5000000};
+const TIER_BYTE={'1M':1,'5M':2};
+const BYTE_TIER={1:'1M',2:'5M'};
+function sha256(msg){
+  const bytes=new TextEncoder().encode(msg);
+  const K=[],H=[];
+  let n=2,found=0;
+  while(found<64){
+    let prime=true;for(let i=2;i*i<=n;i++){if(n%i===0){prime=false;break}}
+    if(prime){if(found<8)H.push(Math.floor((Math.sqrt(n)%1)*4294967296));K.push(Math.floor((Math.cbrt(n)%1)*4294967296));found++}
+    n++;
+  }
+  const l=bytes.length;const total=((l+9+63)>>6)<<6;
+  const buf=new Uint8Array(total);buf.set(bytes);buf[l]=0x80;
+  const dv=new DataView(buf.buffer);
+  dv.setUint32(total-4,(l*8)>>>0);dv.setUint32(total-8,Math.floor(l*8/4294967296));
+  const hh=H.slice();const w=new Array(64);
+  for(let o=0;o<total;o+=64){
+    for(let i=0;i<16;i++)w[i]=dv.getUint32(o+i*4);
+    for(let i=16;i<64;i++){
+      const a=w[i-15],b=w[i-2];
+      const s0=((a>>>7)|(a<<25))^((a>>>18)|(a<<14))^(a>>>3);
+      const s1=((b>>>17)|(b<<15))^((b>>>19)|(b<<13))^(b>>>10);
+      w[i]=(w[i-16]+s0+w[i-7]+s1)>>>0;
+    }
+    let a=hh[0],b=hh[1],c=hh[2],d=hh[3],e=hh[4],f=hh[5],g=hh[6],h=hh[7];
+    for(let i=0;i<64;i++){
+      const S1=((e>>>6)|(e<<26))^((e>>>11)|(e<<21))^((e>>>25)|(e<<7));
+      const ch=(e&f)^(~e&g);
+      const t1=(h+S1+ch+K[i]+w[i])>>>0;
+      const S0=((a>>>2)|(a<<30))^((a>>>13)|(a<<19))^((a>>>22)|(a<<10));
+      const maj=(a&b)^(a&c)^(b&c);
+      const t2=(S0+maj)>>>0;
+      h=g;g=f;f=e;e=(d+t1)>>>0;d=c;c=b;b=a;a=(t1+t2)>>>0;
+    }
+    hh[0]=(hh[0]+a)>>>0;hh[1]=(hh[1]+b)>>>0;hh[2]=(hh[2]+c)>>>0;hh[3]=(hh[3]+d)>>>0;
+    hh[4]=(hh[4]+e)>>>0;hh[5]=(hh[5]+f)>>>0;hh[6]=(hh[6]+g)>>>0;hh[7]=(hh[7]+h)>>>0;
+  }
+  return hh.map(x=>x.toString(16).padStart(8,'0')).join('');
+}
+function hexToB32(hex,count){let out='';for(let i=0;i<count;i++)out+=B32.charAt(parseInt(hex.substr(i*2,2),16)%32);return out}
+function uidOf(phone){return 'NF-'+hexToB32(sha256('uid|naira-floor|'+phone),7)}
+function toHex(bytes){return Array.from(bytes).map(b=>b.toString(16).padStart(2,'0')).join('')}
+function b64uEncode(bytes){let s='';for(let i=0;i<bytes.length;i++)s+=String.fromCharCode(bytes[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'')}
+function b64uDecode(str){str=str.replace(/-/g,'+').replace(/_/g,'/');while(str.length%4)str+='=';const bin=atob(str);const o=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)o[i]=bin.charCodeAt(i);return o}
+function codeMessage(id,tierKey,nonceHex){return new TextEncoder().encode(id+'|'+tierKey+'|'+nonceHex)}
+
+const DATA={"at":"2026-10-22","atLabel":"22 Oct 2026","time":"19:25","stocks":[["ABBEYBANK","Abbey Bank Plc",6.8,6.95,0,null,null,null,null],["ABCTRANS","ABC Transport Plc",7.3,7.3,0,null,null,null,null],["ACADEMY","Academy Press Plc",5.1,5.1,0,null,null,null,null],["ACCESSCORP","Access Holdings Plc",26.75,26.1,0,"Banking",-3.57,-7.38,28.57],["AFRINSURE","African Alliance Insurance Plc",0.2,0.2,0,null,null,null,null],["AFRIPRUD","Africa Prudential Plc",10.45,10.45,0,null,null,null,null],["AFROMEDIA","Afromedia Plc",0.24,0.24,0,null,null,null,null],["AIICO","AIICO Insurance Plc",3.81,3.8,0,null,null,null,null],["AIRTELAFRI","Airtel Africa Plc",6300.0,6300.0,0,"Telecoms",0,0,177.53],["ALEX","Aluminium Extrusion Industries Plc",9.9,9.9,0,null,null,null,null],["ARADEL","Aradel Holdings Plc",1499.9,1499.9,0,"Oil & Gas",7.14,-1.97,123.87],["AUSTINLAZ","Austin Laz & Company Plc",2.9,3.18,0,null,null,null,null],["AVACAP","AVA Capital Plc",7.25,6.6,0,null,null,null,null],["AVAIF","AVA Infrastructure Fund",1000000.0,1000000.0,0,null,null,null,null],["BAPLC","Briclinks Africa Plc",6.25,6.25,0,"Services",0,0,0],["BERGER","Berger Paints Nigeria Plc",147.6,147.6,0,"Industrial",0,0,207.5],["BETAGLAS","Beta Glass Plc",511.5,511.5,0,"Industrial",0,0,38.24],["BUACEMENT","BUA Cement Plc",297.0,297.0,0,"Industrial",0,0,66.39],["BUAFOODS","BUA Foods Plc",760.6,760.6,0,"Consumer goods",0,0,-4.79],["CADBURY","Cadbury Nigeria Plc",60.0,60.0,0,"Consumer goods",0.5,13.21,0.17],["CAP","Chemical and Allied Products Plc",108.5,108.5,0,null,null,null,null],["CAVERTON","Caverton Offshore Support Group Plc",4.8,4.8,0,null,null,null,null],["CHAMPION","Champion Breweries Plc",9.8,10.0,0,null,null,null,null],["CHAMS","Chams Holding Company Plc",3.39,3.41,0,null,null,null,null],["CHELLARAM","Chellarams Plc",9.7,9.7,0,null,null,null,null],["CILEASING","C&I Leasing Plc",5.25,5.4,0,null,null,null,null],["CMFC","DEAP Capital Management & Trust Plc",3.57,3.57,0,null,null,null,null],["CNIF","Coronation Infrastructure Fund",154.3,154.3,0,null,null,null,null],["CONHALLPLC","Consolidated Hallmark Holdings Plc",6.69,6.5,0,null,null,null,null],["CONOIL","Conoil Plc",210.0,210.0,0,null,null,null,null],["CORNERST","Cornerstone Insurance Plc",4.6,4.9,0,null,null,null,null],["CUSTODIAN","Custodian Investment Plc",64.7,64.7,0,"Insurance",null,null,null],["CUTIX","Cutix Plc",2.31,2.27,0,null,null,null,null],["CWG","CWG Plc",18.05,18.05,0,null,null,null,null],["DAARCOMM","DAAR Communications Plc",1.45,1.46,0,null,null,null,null],["DANGCEM","Dangote Cement Plc",1010.0,1008.0,0,"Industrial",-5.5,-4,65.52],["DANGSUGAR","Dangote Sugar Refinery Plc",67.0,67.0,0,"Consumer goods",-2.7,-6.71,11.25],["EKOCORP","Eko Corporation Plc",5.8,5.8,0,null,null,null,null],["ELLAHLAKES","Ellah Lakes Plc",7.8,7.8,0,null,null,null,null],["ENAMELWA","Enamelware Nigeria Plc",36.65,36.65,0,null,null,null,null],["ETERNA","Eterna Plc",38.9,38.9,0,null,null,null,null],["ETI","Ecobank Transnational Incorporated",67.0,67.0,0,"Banking",-3.55,1.49,62.29],["ETRANZACT","eTranzact International Plc",17.1,17.1,0,null,null,null,null],["EUNISELL","Eunisell Interlinked Plc",189.0,189.0,0,null,null,null,null],["FCMB","FCMB Group Plc",11.0,10.95,0,"Banking",0,-0.9,-8.71],["FIDELITYBK","Fidelity Bank Plc",22.0,22.0,0,"Banking",10,13.7,15.79],["FIDSON","Fidson Healthcare Plc",83.5,83.5,0,null,null,null,null],["FIRSTHOLDCO","First HoldCo Plc",131.0,131.0,0,"Banking",-4.27,-18.12,173.49],["FTGINSURE","Fortis Global Insurance Plc",1.81,1.81,0,null,null,null,null],["FTNCOCOA","FTN Cocoa Processors Plc",7.5,7.5,0,null,null,null,null],["GEREGU","Geregu Power Plc",825.7,825.7,0,"Power",0,0,-27.67],["GOLDBREW","Golden Guinea Breweries Plc",7.1,7.1,0,null,null,null,null],["GTCO","Guaranty Trust Holding Company Plc",122.0,122.4,0,"Banking",-4.46,-6.15,34.51],["GUINEAINS","Guinea Insurance Plc",0.85,0.85,0,null,null,null,null],["GUINNESS","Guinness Nigeria Plc",423.0,423.0,0,"Consumer goods",0,9.93,20.89],["HBMNG","HBM Nigeria Plc",379.0,379.0,0,null,null,null,null],["HMCALL","Haldane McCall Plc",3.41,3.41,0,null,null,null,null],["HONYFLOUR","Honeywell Flour Mills Plc",17.5,17.5,0,null,null,null,null],["IKEJAHOTEL","Ikeja Hotel Plc",45.0,45.0,0,null,null,null,null],["IMG","Industrial and Medical Gases Nigeria Plc",28.0,28.0,0,null,null,null,null],["INFINITY","Infinity Trust Mortgage Bank Plc",11.25,11.25,0,null,null,null,null],["INTBREW","International Breweries Plc",9.05,9.5,0,"Consumer goods",null,null,null],["INTENEGINS","International Energy Insurance Plc",2.14,2.03,0,null,null,null,null],["JAIZBANK","Jaiz Bank Plc",7.75,7.8,0,"Banking",0.65,-1.27,71.43],["JAPAULGOLD","Japaul Gold & Ventures Plc",2.58,2.53,0,null,null,null,null],["JBERGER","Julius Berger Nigeria Plc",310.8,310.8,0,"Construction",0,0,103.27],["JOHNHOLT","John Holt Plc",8.75,8.75,0,null,null,null,null],["JULI","Juli Plc",6.55,6.55,0,null,null,null,null],["LASACO","LASACO Assurance Plc",1.8,1.85,0,null,null,null,null],["LEARNAFRCA","Learn Africa Plc",9.15,9.15,0,null,null,null,null],["LEGENDINT","Legend Internet Plc",3.4,3.4,0,null,null,null,null],["LINKASSURE","Linkage Assurance Plc",1.6,1.6,0,null,null,null,null],["LIVESTOCK","Livestock Feeds Plc",18.9,18.75,0,null,null,null,null],["LIVINGTRUST","LivingTrust Mortgage Bank Plc",3.22,3.22,0,null,null,null,null],["MANSARD","AXA Mansard Insurance Plc",11.0,11.0,0,null,null,null,null],["MAYBAKER","May & Baker Nigeria Plc",39.75,39.75,0,null,null,null,null],["MBENEFIT","Mutual Benefits Assurance Plc",3.0,3.0,0,null,null,null,null],["MCNICHOLS","McNichols Consolidated Plc",5.2,5.2,0,null,null,null,null],["MECURE","MeCure Industries Plc",56.2,56.2,0,null,null,null,null],["MEYER","Meyer Plc",17.5,17.5,0,null,null,null,null],["MOFIREIF","MOFI Real Estate Investment Fund",100.0,100.0,0,null,null,null,null],["MORISON","Morison Industries Plc",10.4,10.4,0,null,null,null,null],["MTNN","MTN Nigeria Communications Plc",825.0,825.0,0,"Telecoms",-2.25,-7.3,61.45],["MULTITREX","Multi-Trex Integrated Foods Plc",0.66,0.66,0,null,null,null,null],["MULTIVERSE","Multiverse Mining and Exploration Plc",19.2,19.2,0,null,null,null,null],["NAHCO","Nigerian Aviation Handling Company Plc",140.0,140.0,0,null,null,null,null],["NASCON","NASCON Allied Industries Plc",183.5,183.5,0,"Consumer goods",-2.86,14.69,70.7],["NB","Nigerian Breweries Plc",75.0,75.0,0,"Consumer goods",-1.32,-0.27,-0.4],["NCR","NCR (Nigeria) Plc",161.2,161.2,0,null,null,null,null],["NEIMETH","Neimeth International Pharmaceuticals Plc",7.6,7.6,0,null,null,null,null],["NEM","NEM Insurance Plc",28.0,28.0,0,null,null,null,null],["NESTLE","Nestlé Nigeria Plc",2750.0,2750.0,0,"Consumer goods",0,-5.17,40.45],["NGXGROUP","Nigerian Exchange Group Plc",152.5,160.0,0,"Financial services",-5.33,-11.06,128.57],["NIDF","Nigeria Infrastructure Debt Fund",158.0,158.0,0,null,null,null,null],["NNFM","Northern Nigeria Flour Mills Plc",79.4,79.4,0,null,null,null,null],["NPFMCRFBK","NPF Microfinance Bank Plc",4.1,4.1,0,null,null,null,null],["NREIT","Nigeria Real Estate Investment Trust",113.0,113.0,0,null,null,null,null],["NSLTECH","Secure Electronic Technology Plc",0.68,0.73,0,null,null,null,null],["OANDO","Oando Plc",34.5,36.0,0,"Oil & Gas",2.86,5.88,-10.45],["OKOMUOIL","Okomu Oil Palm Plc",1276.2,1276.2,0,null,null,null,null],["OMATEK","Omatek Ventures Plc",1.45,1.45,0,null,null,null,null],["PHARMDEKO","Pharma-Deko Plc",1.83,1.83,0,null,null,null,null],["PREMPAINTS","Premier Paints Plc",30.4,30.4,0,null,null,null,null],["PRESCO","Presco Plc",2045.3,2045.3,0,"Agriculture",0,0,41.06],["PRESTIGE","Prestige Assurance Plc",1.38,1.38,0,null,null,null,null],["PZ","PZ Cussons Nigeria Plc",68.95,63.5,0,null,null,null,null],["REDSTAREX","Red Star Express Plc",13.4,13.4,0,null,null,null,null],["REGALINS","Regency Alliance Insurance Plc",0.73,0.73,0,null,null,null,null],["RONCHESS","Ronchess Global Resources Plc",81.0,81.0,0,null,null,null,null],["ROYALEX","Royal Exchange Plc",0.99,1.0,0,null,null,null,null],["RTBRISCOE","RT Briscoe Nigeria Plc",9.3,9.3,0,null,null,null,null],["SCOA","SCOA Nigeria Plc",33.05,33.05,0,null,null,null,null],["SEPLAT","Seplat Energy Plc",16000.1,16000.1,0,"Oil & Gas",0,7.33,175.44],["SFSREIT","SFS Real Estate Investment Trust Fund",418.75,418.75,0,null,null,null,null],["SKYAVN","Skyway Aviation Handling Company Plc",171.2,171.2,0,null,null,null,null],["SOVRENINS","Sovereign Trust Insurance Plc",2.02,2.03,0,null,null,null,null],["STANBIC","Stanbic IBTC Holdings Plc",160.0,160.0,0,"Banking",-4.76,4.58,60],["STERLINGNG","Sterling Financial Holdings Company Plc",76.95,76.5,0,"Banking",null,null,null],["SUNUASSUR","Sunu Assurances Nigeria Plc",3.0,3.0,0,null,null,null,null],["TANTALIZER","Tantalizers Plc",3.98,3.76,0,null,null,null,null],["THOMASWY","Thomas Wyatt Nigeria Plc",2.52,2.8,0,null,null,null,null],["TIP","The Initiates Plc",24.7,24.0,0,null,null,null,null],["TOTAL","TotalEnergies Marketing Nigeria Plc",518.4,518.4,0,null,null,null,null],["TRANSCOHOT","Transcorp Hotels Plc",290.5,290.5,0,null,null,null,null],["TRANSCORP","Transnational Corporation Plc",36.1,36.1,0,"Conglomerate",0.28,4.18,-20.48],["TRANSEXPR","Trans-Nationwide Express Plc",2.7,2.7,0,null,null,null,null],["TRANSPOWER","Transcorp Power Plc",178.0,178.0,0,"Power",0,0,-42.02],["TRIPPLEG","Tripple Gee & Company Plc",3.09,3.09,0,null,null,null,null],["UACN","UAC of Nigeria Plc",181.0,181.0,0,"Conglomerate",-0.06,7.67,98.9],["UBA","United Bank for Africa Plc",41.8,41.9,0,"Banking",-2.56,-5.2,0.6],["UCAP","United Capital Plc",16.55,16.55,0,null,null,null,null],["UHREIT","UHREIT",70.0,70.0,0,null,null,null,null],["UNILEVER","Unilever Nigeria Plc",109.0,109.0,0,null,null,null,null],["UNIONDICON","Union Dicon Salt Plc",23.75,23.75,0,null,null,null,null],["UNITYBNK","Unity Bank Plc",1.51,1.51,0,null,null,null,null],["UNIVINSURE","Universal Insurance Plc",0.77,0.77,0,null,null,null,null],["UPDC","UPDC Plc",3.6,3.85,0,null,null,null,null],["UPDCREIT","UPDC Real Estate Investment Trust",19.05,19.05,0,null,null,null,null],["UPL","University Press Plc",4.65,4.65,0,null,null,null,null],["VERITASKAP","Veritas Kapital Assurance Plc",1.08,1.14,0,null,null,null,null],["VFDGROUP","VFD Group Plc",13.0,12.55,0,null,null,null,null],["VITAFOAM","Vitafoam Nigeria Plc",174.6,174.6,0,null,null,null,null],["WAPIC","Coronation Insurance Plc",2.41,2.37,0,null,null,null,null],["WEMABANK","Wema Bank Plc",29.0,30.0,0,"Banking",-0.33,-5.94,47.55],["ZENITHBANK","Zenith Bank Plc",121.5,122.0,0,"Banking",-4.54,-5.13,97.41],["ZICHIS","Zichis Agro Allied Industries Plc",17.4,17.4,0,null,null,null,null]]};
+// DATA = {at:'2026-10-22', atLabel:'22 Oct 2026', time:'11:15', stocks:[[sym,name,price,prevClose|null,live(0/1),sector|null,w|null,m|null,y|null]...]}
+const STOCKS=DATA.stocks.map(r=>({s:r[0],n:r[1],p:r[2],pc:r[3],live:!!r[4],sec:r[5],w:r[6],m:r[7],y:r[8],d:r[3]!=null&&r[3]>0?Math.round((r[2]/r[3]-1)*10000)/100:null}));
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+const $$=s=>Array.from(document.querySelectorAll(s));
+const round2=x=>Math.round(x*100)/100;
+const fmt=(n,d=2)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const money=n=>'₦'+fmt(n);
+const price=n=>'₦'+n.toLocaleString('en-US',{minimumFractionDigits:0,maximumFractionDigits:2});
+const signed=n=>(n>=0?'+':'−')+'₦'+fmt(Math.abs(n));
+const pct=n=>n==null?'—':(n>0?'+':n<0?'−':'')+Math.abs(n).toFixed(2)+'%';
+const cls=n=>n==null||n===0?'flat':n>0?'up':'down';
+const LAGOS='Africa/Lagos';
+const tFull=new Intl.DateTimeFormat('en-GB',{timeZone:LAGOS,day:'numeric',month:'short',hour:'2-digit',minute:'2-digit',hour12:false});
+function hash(str){let h=2166136261;for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+const stockOf=s=>STOCKS.find(x=>x.s===s);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+
+/* ---------- accounts (saved in this browser) ---------- */
+function readJSON(k,fallback){try{const v=localStorage.getItem(k);return v?JSON.parse(v):fallback}catch(e){return fallback}}
+function writeJSON(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let accounts=readJSON(KEY_ACCTS,{});
+let phone=null,acct=null;
+function normPhone(raw){
+  let d=String(raw).replace(/[\s\-().]/g,'');
+  if(d.charAt(0)==='+')d=d.slice(1);
+  if(/^234\d{10}$/.test(d))d='0'+d.slice(3);
+  return /^0\d{10}$/.test(d)?d:null;
+}
+function saveAcct(){if(phone){acct.u=Date.now();accounts[phone]=acct;writeJSON(KEY_ACCTS,accounts);syncPush()}}
+function logIn(p,name){
+  phone=p;
+  if(accounts[p]){acct=accounts[p];if(name)acct.name=name}
+  else{acct={name:name,cash:START_CASH,hold:{},log:[],since:Date.now()}}
+  if(!acct.id)acct.id=uidOf(p);
+  if(!acct.redeemed)acct.redeemed=[];
+  if(!acct.topups)acct.topups=0;
+  saveAcct();writeJSON(KEY_SESSION,p);
+}
+function logOut(){const p0=phone,a0=acct;phone=null;acct=null;try{localStorage.removeItem(KEY_SESSION)}catch(e){}authOut(p0,a0)}
+
+let liveTime=null;
+let view='login',sel='DANGCEM',side='buy',qty=0,filter='all',query='',confirmOut=false,confirmReset=false,backTo='market',txAll=false;
+let toastTimer=0;
+function toast(msg){const t=$('#toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>t.classList.remove('show'),4200)}
+const holdingsValue=()=>round2(Object.keys(acct.hold).reduce((v,s)=>v+acct.hold[s].q*stockOf(s).p,0));
+const costBasis=()=>round2(Object.keys(acct.hold).reduce((v,s)=>v+acct.hold[s].q*acct.hold[s].avg,0));
+
+function logo(s){
+  const st=typeof stockOf==='function'?stockOf(s):null;
+  const img=st&&st.logo&&/^[a-z0-9._-]+$/i.test(st.logo)?'<img class="tvl" alt="" loading="lazy" src="https://s3-symbol-logo.tradingview.com/'+st.logo+'.svg">':'';
+  return '<span class="logo" style="--h:'+(hash(s)%360)+'" aria-hidden="true">'+esc(s.slice(0,2))+img+'</span>'}
+window.addEventListener('error',e=>{const t=e.target;if(t&&t.classList&&t.classList.contains('tvl'))t.remove()},true);
+function row(st,subText,topRight,botRight,botCls,showLive){
+  return '<button class="row" data-s="'+st.s+'">'+logo(st.s)+
+    '<span class="rn"><span class="top"><b>'+esc(st.s)+'</b>'+(showLive&&st.live?'<span class="live">LIVE</span>':'')+'</span><small>'+esc(subText)+'</small></span>'+
+    '<span class="rp"><b>'+topRight+'</b><em class="'+botCls+'">'+botRight+'</em></span></button>';
+}
+
+/* ---------- freshness ---------- */
+function ageDays(){
+  const today=new Intl.DateTimeFormat('en-CA',{timeZone:LAGOS}).format(new Date());
+  return Math.round((Date.parse(today)-Date.parse(DATA.at))/86400000);
+}
+function renderBanner(){
+  const el=$('#banner');
+  if(liveTime){el.className='banner';el.innerHTML='<i class="dot"></i><span><b>Live prices, updated '+liveTime+' WAT.</b> Source: Kobo Terminal, delayed by at least 30 minutes. Changes are against the previous close.</span>';return}
+  const a=ageDays();
+  if(a<=0){el.className='banner';el.innerHTML='<i class="dot"></i><span><b>Prices from the '+DATA.atLabel+' close.</b> Taken at '+DATA.time+' WAT, after the market closed. Source: Kobo Terminal. Changes are against the previous close.</span>'}
+  else{el.className='banner old';el.innerHTML='<i class="dot"></i><span><b>These prices are '+a+(a===1?' day':' days')+' old.</b> They are from the '+DATA.atLabel+' close. Ask for a refresh to get the latest session.</span>'}
+}
+
+/* ---------- market ---------- */
+function renderMarket(){
+  $('#chipCash').textContent=price(acct.cash);
+  $('#hello').textContent='Hi '+acct.name.split(' ')[0]+', Nigerian Exchange';
+  renderBanner();
+  const q=query.trim().toLowerCase();
+  const list=STOCKS.filter(st=>{
+    if(q&&st.s.toLowerCase().indexOf(q)<0&&st.n.toLowerCase().indexOf(q)<0)return false;
+    if(filter==='live')return st.live;
+    if(filter==='up')return st.d!=null&&st.d>0;
+    if(filter==='down')return st.d!=null&&st.d<0;
+    if(filter==='held')return !!acct.hold[st.s];
+    return true;
+  });
+  $('#count').textContent=list.length+(list.length===1?' stock':' stocks');
+  if(!list.length){$('#mlist').innerHTML='<div class="empty"><b>No stocks found</b>Try a different name or clear the filter.</div>';return}
+  $('#mlist').innerHTML=list.map(st=>row(st,st.n,price(st.p),pct(st.d),cls(st.d),true)).join('');
+}
+
+/* ---------- stock detail ---------- */
+function mrow(label,v,scale){
+  if(v==null)return '';
+  const w=Math.min(Math.abs(v)/scale,1)*50;const left=v>=0?50:50-w;
+  return '<div class="mrow"><span>'+label+'</span><div class="mtrack"><i class="mid"></i>'+(w>0?'<b class="mfill '+cls(v)+'" style="left:'+left+'%;width:'+w+'%"></b>':'')+'</div><em class="'+cls(v)+'">'+pct(v)+'</em></div>';
+}
+function renderDetail(){
+  const st=stockOf(sel);
+  $('#dSym').textContent=st.s;$('#dName').textContent=st.n;
+  $('#dPx').textContent=money(st.p);
+  const p=$('#dChg');p.textContent=st.d==null?'No change data':pct(st.d)+' today';p.className='pill '+cls(st.d);
+  $('#dStatus').innerHTML=liveTime?'<span class="live">LIVE</span><span>Updated '+liveTime+' WAT</span>':'<span>'+DATA.atLabel+' close</span>';
+  const facts=[['Price',money(st.p)]];
+  if(st.pc!=null)facts.push(['Previous close',money(st.pc)]);
+  if(st.sec)facts.push(['Sector',esc(st.sec)]);
+  $('#dfacts').innerHTML='<h3>Market data</h3><dl class="kv">'+facts.map(f=>'<div><dt>'+f[0]+'</dt><dd>'+f[1]+'</dd></div>').join('')+'</dl>';
+  const vals=[st.w,st.m].filter(v=>v!=null).map(Math.abs);const scale=Math.max(10,...vals);
+  if(st.w!=null||st.m!=null||st.y!=null){
+    $('#momentum').hidden=false;
+    $('#momentum').innerHTML='<h3>Recent performance</h3>'+mrow('7 days',st.w,scale)+mrow('30 days',st.m,scale)+(st.y!=null?'<div class="mrow"><span>This year</span><span></span><em class="'+cls(st.y)+'">'+pct(st.y)+'</em></div>':'')+'<p class="note">As listed by Kobo Terminal on 21 Oct 2026. A flat 0.00% means the stock has not traded in that period.</p>';
+  }else $('#momentum').hidden=true;
+  const h=acct.hold[sel];
+  if(h){
+    const val=round2(h.q*st.p),cost=round2(h.q*h.avg),pl=round2(val-cost);
+    $('#position').innerHTML='<h3>Your position</h3><dl class="kv"><div><dt>Shares</dt><dd>'+h.q.toLocaleString('en-US')+'</dd></div><div><dt>Average cost</dt><dd>'+money(h.avg)+'</dd></div><div><dt>Market value</dt><dd>'+money(val)+'</dd></div><div><dt>Profit / loss</dt><dd class="'+cls(pl)+'">'+signed(pl)+' ('+pct(cost?pl/cost*100:0)+')</dd></div></dl>';
+  }else{
+    $('#position').innerHTML='<h3>Your position</h3><p class="sub" style="margin:0">You do not hold any '+esc(sel)+' yet. Press Buy to place your first order at '+money(st.p)+'.</p>';
+  }
+  $('#openSell').disabled=!h;
+  mountChart(sel);
+}
+
+/* ---------- portfolio ---------- */
+function renderPortfolio(){
+  const hv=holdingsValue(),cb=costBasis(),pl=round2(hv-cb);const keys=Object.keys(acct.hold).sort();
+  let html='<h1>Portfolio</h1><p class="sub">Shares you own at today’s prices</p>';
+  html+='<div class="sumcard"><span class="eyebrow">Shares value</span><span class="big">'+money(hv)+'</span>'+
+    (keys.length?'<span class="line '+cls(pl)+'">'+signed(pl)+' ('+pct(cb?pl/cb*100:0)+') open profit / loss</span>':'<span class="line sub">Nothing invested yet</span>')+'</div>';
+  html+='<div class="sechead"><h2>Holdings</h2><span class="sub" style="margin:0">'+keys.length+(keys.length===1?' stock':' stocks')+'</span></div>';
+  if(!keys.length){
+    html+='<div class="empty"><b>No shares yet</b>Open the Market tab, pick a stock and place a buy order. Your cash stays in your wallet until you do.</div>';
+  }else{
+    html+='<div class="list">'+keys.map(s=>{
+      const h=acct.hold[s];const st=stockOf(s);const val=round2(h.q*st.p),cost=round2(h.q*h.avg),p=round2(val-cost);
+      return row(st,h.q.toLocaleString('en-US')+(h.q===1?' share':' shares')+' · avg '+price(h.avg),money(val),signed(p)+' ('+pct(cost?p/cost*100:0)+')',cls(p),false);
+    }).join('')+'</div>';
+  }
+  $('#v-portfolio').innerHTML=html;
+}
+
+/* ---------- wallet ---------- */
+const ICON_IN='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M9 7h8v8"/></svg>';
+const ICON_OUT='<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 7L7 17M15 17H7V9"/></svg>';
+const ICON_SEND='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 3L10.5 13.5"/><path d="M21 3l-6.5 18-4-7.5L3 9.5z"/></svg>';
+function renderWallet(){
+  const hv=holdingsValue();const eq=round2(acct.cash+hv);
+  const held=Object.keys(acct.hold);const cost=round2(held.reduce((a,k)=>a+acct.hold[k].q*acct.hold[k].avg,0));const pl=round2(hv-cost);const hasPos=held.length>0;
+  let html='<h1>Wallet</h1><p class="sub">Your practice cash. Buys take money out, sells put it back.</p>';
+  html+='<div class="balcard"><span class="lbl">Wallet balance</span><span class="big">'+money(acct.cash)+'</span><span class="hint">Available to trade now</span>'+
+    '<div class="balgrid"'+(hasPos?'':' style="grid-template-columns:repeat(2,minmax(0,1fr))"')+'><div><span>In shares</span><b>'+money(hv)+'</b></div><div><span>Total worth</span><b>'+money(eq)+'</b></div>'+(hasPos?'<div><span>Profit / loss</span><b class="'+(pl>=0?'gain':'loss')+'">'+signed(pl)+'</b></div>':'')+'</div></div>';
+  html+='<div class="idcard"><div><span class="eyebrow">Your ID</span><div class="idv" id="myId">'+esc(acct.id)+'</div><small>Send this ID on Telegram when you pay.</small></div><button class="btn" data-act="copyid">Copy ID</button></div>';
+  html+='<div class="upgrade"><div><h2>Need more practice cash?</h2><p class="sub">Pay for a premium wallet, send us your ID on Telegram, and we reply with a top-up code. Enter the code below to add the cash.</p></div>'+
+    '<div class="tiers"><div class="tier"><span>Premium wallet</span><b>₦1,000,000</b><strong>Pay ₦500</strong></div><div class="tier"><span>Premium wallet</span><b>₦5,000,000</b><strong>Pay ₦1,000</strong></div></div>'+
+    '<a class="tg" href="'+TG_URL+'" target="_blank" rel="noopener noreferrer">'+ICON_SEND+'Message us on Telegram</a>'+
+    '<form class="redeem" id="redeemForm" novalidate><label for="rcode">Have a top-up code?</label><div class="rw"><input id="rcode" type="text" placeholder="Paste your top-up code" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="apply" type="submit">Apply</button></div><p class="msg" id="rmsg" role="status"></p></form></div>';
+  const rows=acct.log.map(e=>{
+    if(e.side==='topup')return '<div class="tx"><span class="txi in">'+ICON_IN+'</span><span class="txm"><b>Premium top-up</b><small>'+tFull.format(new Date(e.t))+'</small></span><span class="txa"><span class="up">+'+money(e.total)+'</span></span></div>';
+    const buy=e.side==='buy';
+    const extra=!buy&&e.pnl!=null?'<small class="'+cls(e.pnl)+'">'+signed(e.pnl)+' profit / loss</small>':'';
+    return '<div class="tx"><span class="txi '+(buy?'out':'in')+'">'+(buy?ICON_OUT:ICON_IN)+'</span>'+
+      '<span class="txm"><b>'+(buy?'Bought ':'Sold ')+e.q.toLocaleString('en-US')+' '+esc(e.s)+'</b><small>at '+price(e.p)+' · '+tFull.format(new Date(e.t))+'</small></span>'+
+      '<span class="txa"><span class="'+(buy?'down':'up')+'">'+(buy?'−':'+')+money(e.total)+'</span>'+extra+'</span></div>';
+  });
+  rows.push('<div class="tx"><span class="txi in">'+ICON_IN+'</span><span class="txm"><b>Practice funds</b><small>Starting balance · '+tFull.format(new Date(acct.since))+'</small></span><span class="txa"><span class="up">+'+money(START_CASH)+'</span></span></div>');
+  const TX_SHOW=5;
+  html+='<div class="sechead"><h2>Transactions</h2>'+(rows.length>TX_SHOW?'<span class="sub" style="margin:0">'+rows.length+' in total</span>':'')+'</div><div>';
+  html+=(txAll?rows:rows.slice(0,TX_SHOW)).join('');
+  html+='</div>';
+  if(rows.length>TX_SHOW)html+='<button class="btn" data-act="txall" style="width:100%;margin-top:12px">'+(txAll?'Show less':'See all '+rows.length+' transactions')+'</button>';
+  html+='<div class="acct"><span>Signed in as <b style="color:var(--fg)">'+esc(acct.name)+'</b></span>';
+  html+=confirmOut?'<button class="btn danger" data-act="out-yes">Log out</button><button class="btn" data-act="out-no">Stay</button>':'<button class="btn" data-act="out">Log out</button>';
+  html+='</div><div class="acct" style="margin-top:12px">';
+  html+=confirmReset?'<span>Reset to '+money(START_CASH)+' and clear all trades?</span><button class="btn danger" data-act="reset-yes">Yes, reset</button><button class="btn" data-act="reset-no">Cancel</button>':'<button class="btn" data-act="reset">Reset practice account</button>';
+  html+='</div><p class="fine">'+(typeof MANSA_CREDIT!=='undefined'?'Your wallet and trades are saved online under your email.':'Your wallet and trades are saved in this browser under your phone number.')+'</p>';
+  if(typeof MANSA_CREDIT!=='undefined')html+='<p class="fine">Market data: <a href="https://mansaapi.com" target="_blank" rel="noopener" style="color:var(--accent)">Mansa API</a>. Charts: TradingView.</p>';
+  $('#v-wallet').innerHTML=html;
+}
+
+/* ---------- navigation ---------- */
+const VIEWS=['login','market','detail','portfolio','wallet'];
+function renderView(){
+  if(view==='market')renderMarket();
+  else if(view==='detail')renderDetail();
+  else if(view==='portfolio')renderPortfolio();
+  else if(view==='wallet')renderWallet();
+}
+function show(v,keepScroll){
+  view=v;
+  VIEWS.forEach(k=>{$('#v-'+k).hidden=k!==v});
+  $('#tabbar').hidden=v==='detail'||v==='login';$('#actionbar').hidden=v!=='detail';
+  const tabOf=v==='detail'?backTo:v;
+  $$('#tabbar button').forEach(b=>b.setAttribute('aria-current',b.dataset.go===tabOf?'page':'false'));
+  renderView();
+  if(!keepScroll)window.scrollTo(0,0);
+}
+function openStock(s){sel=s;backTo=view==='portfolio'?'portfolio':'market';show('detail')}
+
+/* ---------- order sheet ---------- */
+function openSheet(s){
+  side=s;qty=0;$('#qty').value='';
+  $('#scrim').hidden=false;$('#sheet').hidden=false;renderSheet();
+  setTimeout(()=>{try{$('#qty').focus()}catch(e){}},50);
+}
+function closeSheet(){$('#scrim').hidden=true;$('#sheet').hidden=true}
+function renderSheet(){
+  const px=stockOf(sel).p;const held=(acct.hold[sel]||{q:0}).q;const buy=side==='buy';
+  $('#shTitle').textContent=(buy?'Buy ':'Sell ')+sel;$('#shPx').textContent=money(px);
+  $('#shBuy').setAttribute('aria-pressed',buy);$('#shSell').setAttribute('aria-pressed',!buy);
+  const q=Math.floor(qty)||0;const total=round2(q*px);
+  $('#sPrice').textContent=money(px);
+  $('#sAvailL').textContent=buy?'Wallet available':'Shares you hold';
+  $('#sAvail').textContent=buy?money(acct.cash):held.toLocaleString('en-US');
+  $('#sTotalL').textContent=buy?'Order total':'You receive';
+  $('#sTotal').textContent=q>0?money(total):'—';
+  $('#sAfter').textContent=q>0?money(buy?acct.cash-total:acct.cash+total):money(acct.cash);
+  let ok=false,note='',warn=false;
+  if(buy){
+    const maxQ=Math.floor(acct.cash/px);
+    ok=q>=1&&total<=acct.cash+1e-6;
+    if(q>0&&!ok){note='You need '+money(total-acct.cash)+' more. You can afford up to '+maxQ.toLocaleString('en-US')+' shares now.';warn=true}
+    else if(maxQ<1){note='Your wallet cannot cover one share of '+sel+'. Pick a cheaper stock or upgrade your wallet.';warn=true}
+  }else{
+    ok=q>=1&&q<=held;
+    if(held<1){note='You do not hold any '+sel+' to sell. Switch to Buy.';warn=true}
+    else if(q>held){note='You only hold '+held.toLocaleString('en-US')+' shares of '+sel+'.';warn=true}
+  }
+  const go=$('#shGo');go.disabled=!ok;go.className='cta '+(buy?'buy':'sell');
+  go.textContent=(buy?'Confirm buy':'Confirm sell')+(q>0?' · '+q.toLocaleString('en-US')+' '+sel:'');
+  const n=$('#shNote');n.textContent=note;n.className='shnote'+(warn?' warn':'');
+}
+function trade(){
+  const buy=side==='buy';const px=stockOf(sel).p;const q=Math.floor(qty)||0;if(q<1)return;
+  if(buy){
+    const cost=round2(q*px);if(cost>acct.cash+1e-6)return;
+    const h=acct.hold[sel]||{q:0,avg:0};h.avg=round2((h.avg*h.q+cost)/(h.q+q));h.q+=q;acct.hold[sel]=h;
+    acct.cash=round2(acct.cash-cost);
+    acct.log.unshift({t:Date.now(),side:'buy',s:sel,q:q,p:px,total:cost,pnl:null});
+    toast('Bought '+q.toLocaleString('en-US')+' '+sel+'. '+money(cost)+' left your wallet.');
+  }else{
+    const h=acct.hold[sel];if(!h||q>h.q)return;
+    const proceeds=round2(q*px);const pnl=round2(q*(px-h.avg));
+    acct.cash=round2(acct.cash+proceeds);h.q-=q;if(h.q===0)delete acct.hold[sel];
+    acct.log.unshift({t:Date.now(),side:'sell',s:sel,q:q,p:px,total:proceeds,pnl:pnl});
+    toast('Sold '+q.toLocaleString('en-US')+' '+sel+'. '+money(proceeds)+' went into your wallet.');
+  }
+  if(acct.log.length>150)acct.log.length=150;
+  qty=0;$('#qty').value='';saveAcct();closeSheet();renderView();
+}
+
+/* ---------- events ---------- */
+$('#loginForm').addEventListener('submit',e=>{
+  e.preventDefault();
+  const name=$('#lname').value.trim().replace(/\s+/g,' ');const p=normPhone($('#lphone').value);const err=$('#lerr');
+  if(name.length<2){err.textContent='Enter your name.';$('#lname').focus();return}
+  if(!p){err.textContent='Enter a valid Nigerian phone number, like 08012345678.';$('#lphone').focus();return}
+  err.textContent='';
+  const btn=$('#loginForm button[type="submit"]');if(btn){btn.disabled=true}
+  syncPull(p).then(remote=>{
+    if(remote&&remote.name&&(!accounts[p]||(remote.u||0)>(accounts[p].u||0))){accounts[p]=remote;writeJSON(KEY_ACCTS,accounts)}
+    const back=!!accounts[p];
+    logIn(p,name);show('market');
+    toast((back?'Welcome back, ':'Welcome, ')+name.split(' ')[0]+'. Your ID is '+acct.id+'.');
+  }).catch(()=>{err.textContent='Could not sign in. Try again.'}).then(()=>{if(btn)btn.disabled=false});
+});
+document.addEventListener('click',e=>{
+  const go=e.target.closest('[data-go]');if(go){show(go.dataset.go);return}
+  const r=e.target.closest('.row');if(r){openStock(r.dataset.s)}
+});
+$('#back').addEventListener('click',()=>show(backTo,true));
+$('#search').addEventListener('input',e=>{query=e.target.value;renderMarket()});
+$('#filters').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;filter=b.dataset.f;$$('#filters button').forEach(x=>x.setAttribute('aria-pressed',x===b));renderMarket()});
+$('#openBuy').addEventListener('click',()=>openSheet('buy'));
+$('#openSell').addEventListener('click',()=>openSheet('sell'));
+$('#shBuy').addEventListener('click',()=>{side='buy';renderSheet()});
+$('#shSell').addEventListener('click',()=>{side='sell';renderSheet()});
+$('#qty').addEventListener('input',e=>{qty=Math.max(0,Math.floor(parseFloat(e.target.value))||0);renderSheet()});
+$('#quick').addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;const p=parseFloat(b.dataset.p);const px=stockOf(sel).p;
+  const maxQ=side==='buy'?Math.floor(acct.cash/px):(acct.hold[sel]||{q:0}).q;
+  qty=maxQ>0?Math.max(1,Math.floor(maxQ*p)):0;$('#qty').value=qty||'';renderSheet();
+});
+$('#shGo').addEventListener('click',trade);
+$('#shCancel').addEventListener('click',closeSheet);
+$('#scrim').addEventListener('click',closeSheet);
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#sheet').hidden)closeSheet()});
+$('#v-wallet').addEventListener('click',e=>{
+  const a=e.target.closest('[data-act]');if(!a)return;
+  const k=a.dataset.act;
+  if(k==='out'){confirmOut=true}
+  else if(k==='out-no'){confirmOut=false}
+  else if(k==='out-yes'){confirmOut=false;logOut();$('#lphone').value='';show('login');return}
+  else if(k==='reset'){confirmReset=true}
+  else if(k==='reset-no'){confirmReset=false}
+  else if(k==='reset-yes'){const keep=acct.topups||0;acct={name:acct.name,id:acct.id,redeemed:acct.redeemed||[],topups:keep,cash:START_CASH+keep,hold:{},log:acct.log.filter(e=>e.side==='topup'),since:Date.now()};confirmReset=false;saveAcct();toast('Account reset. You have '+money(acct.cash)+' to trade with.')}
+  else if(k==='txall'){txAll=!txAll}
+  else if(k==='copyid'){
+    const done=()=>toast('ID copied: '+acct.id);
+    try{navigator.clipboard.writeText(acct.id).then(done,()=>{selectId()})}catch(err){selectId()}
+    return;
+  }
+  renderWallet();
+});
+function selectId(){
+  const el=$('#myId');if(!el)return;
+  try{const r=document.createRange();r.selectNodeContents(el);const s=window.getSelection();s.removeAllRanges();s.addRange(r)}catch(e){}
+  toast('Press and hold your ID to copy it.');
+}
+$('#v-wallet').addEventListener('submit',e=>{
+  if(!e.target.closest('#redeemForm'))return;
+  e.preventDefault();
+  const m=$('#rmsg');m.className='msg';m.textContent='Checking code…';
+  redeemCode($('#rcode').value).then(res=>{
+    if(res.ok){renderWallet();toast('Top-up added: '+money(res.amount)+' is now in your wallet.');return}
+    m.textContent=res.error;m.className='msg bad';
+  });
+});
+/* Codes are signed by the owner. This page only holds the public key, so it can check a code but cannot make one. */
+async function redeemCode(raw){
+  const BAD={ok:false,error:'That code does not look right. Copy it again exactly as it was sent.'};
+  const code=String(raw).trim().replace(/\s+/g,'');
+  if(!/^NF1-[A-Za-z0-9_-]{95}$/.test(code))return BAD;
+  let bytes;try{bytes=b64uDecode(code.slice(4))}catch(err){return BAD}
+  if(bytes.length!==71||!BYTE_TIER[bytes[0]])return BAD;
+  const tier=BYTE_TIER[bytes[0]];const nonce=toHex(bytes.slice(1,7));
+  if(acct.redeemed.indexOf(nonce)>=0)return {ok:false,error:'This code has already been used.'};
+  if(!(window.crypto&&crypto.subtle))return {ok:false,error:'This browser cannot check codes. Open the page in Chrome or Safari.'};
+  let good=false;
+  try{
+    const key=await crypto.subtle.importKey('jwk',PUB,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
+    good=await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,bytes.slice(7),codeMessage(acct.id,tier,nonce));
+  }catch(err){return {ok:false,error:'Could not check the code. Try again.'}}
+  if(!good)return {ok:false,error:'This code is not valid for your ID. Make sure you sent us your own ID.'};
+  const amount=TIERS[tier];
+  acct.redeemed.push(nonce);acct.cash=round2(acct.cash+amount);acct.topups=(acct.topups||0)+amount;
+  acct.log.unshift({t:Date.now(),side:'topup',s:'',q:0,p:0,total:amount,pnl:null});
+  saveAcct();
+  return {ok:true,amount:amount};
+}
+
+const MANSA_CREDIT=true;
+/* ---------- hosted version only: real candles and live prices ---------- */
+function isDark(){
+  const t=document.documentElement.getAttribute('data-theme');
+  if(t==='dark')return true;if(t==='light')return false;
+  try{return window.matchMedia('(prefers-color-scheme: dark)').matches}catch(e){return false}
+}
+let tvKey='';
+function mountChart(sym){
+  const card=$('#tvcard');card.hidden=false;
+  const key=sym+'|'+isDark();
+  if(tvKey===key)return;
+  tvKey=key;
+  const box=$('#tv');box.innerHTML='';
+  const wrap=document.createElement('div');wrap.className='tradingview-widget-container';wrap.style.height='100%';wrap.style.width='100%';
+  const inner=document.createElement('div');inner.className='tradingview-widget-container__widget';inner.style.height='100%';inner.style.width='100%';
+  const sc=document.createElement('script');
+  sc.src='https://s3.tradingview.com/external-embedding/embed-widget-advanced-chart.js';sc.async=true;
+  sc.text=JSON.stringify({autosize:true,symbol:'NSENG:'+sym,interval:'D',timezone:'Africa/Lagos',theme:isDark()?'dark':'light',style:'1',locale:'en',allow_symbol_change:false,hide_side_toolbar:true,calendar:false,withdateranges:true,support_host:'https://www.tradingview.com'});
+  wrap.appendChild(inner);wrap.appendChild(sc);box.appendChild(wrap);
+}
+async function pullPrices(){
+  try{
+    let j=null;
+    try{
+      const d=await fetch('https://scanner.tradingview.com/nigeria/scan',{method:'POST',headers:{'Content-Type':'text/plain;charset=UTF-8'},body:JSON.stringify({columns:['name','close','change','logoid'],range:[0,400],markets:['nigeria'],symbols:{query:{types:['stock']}},sort:{sortBy:'name',sortOrder:'asc'}})});
+      if(d.ok){
+        const raw=await d.json();
+        const list=(raw.data||[]).map(r=>{const a=r.d||[];return{s:String(a[0]||'').toUpperCase(),p:Number(a[1]),d:Number.isFinite(Number(a[2]))?Number(a[2]):null,l:a[3]||null}}).filter(x=>x.s&&x.p>0);
+        if(list.length>20)j={stocks:list};
+      }
+    }catch(e){}
+    if(!j){
+      const r=await fetch('/api/stocks',{cache:'no-store'});
+      if(!r.ok)return;
+      j=await r.json();
+    }
+    if(!j||!Array.isArray(j.stocks)||!j.stocks.length)return;
+    let n=0;
+    j.stocks.forEach(x=>{
+      const st=stockOf(x.s);if(!st||!(x.p>0))return;
+      st.p=x.p;if(x.l)st.logo=x.l;
+      if(typeof x.d==='number'&&isFinite(x.d)){st.d=round2(x.d);st.pc=round2(x.p/(1+x.d/100))}
+      else if(st.pc>0){st.d=round2((x.p/st.pc-1)*100)}
+      n++;
+    });
+    if(n>0){
+      liveTime=j.time||new Intl.DateTimeFormat('en-GB',{timeZone:LAGOS,hour:'2-digit',minute:'2-digit',hour12:false}).format(new Date());
+      if(view!=='login')renderView();
+      if(!$('#sheet').hidden)renderSheet();
+    }
+  }catch(e){}
+}
+function startLive(){
+  pullPrices();
+  setInterval(pullPrices,5*60*1000);
+}
+
+/* ---------- Firebase: name + email + password, confirmed by email link, saved online ---------- */
+const FB_CFG={apiKey:"AIzaSyC2lV8G-0mqG7v1hgSlRaWCJE21i8FY2NM",authDomain:"naira-floor.firebaseapp.com",projectId:"naira-floor",storageBucket:"naira-floor.firebasestorage.app",messagingSenderId:"198514125954",appId:"1:198514125954:web:cab238141ca3ff4637d89b"};
+const DAY30=30*86400000;
+let fbP=null,AU=null;
+function fb(){
+  if(window.__FBMOCK)return Promise.resolve(window.__FBMOCK);
+  if(!fbP)fbP=(async()=>{
+    const B='https://www.gstatic.com/firebasejs/13.1.0/';
+    const M=await import(B+'firebase-app.js');
+    const F=await import(B+'firebase-firestore.js');
+    const A=await import(B+'firebase-auth.js');
+    const app=M.initializeApp(FB_CFG);
+    return {db:F.getFirestore(app),F:F,auth:A.getAuth(app),A:A};
+  })().catch(e=>{fbP=null;throw e});
+  return fbP;
+}
+/* a phone is "trusted" for 30 days after the email link is confirmed on it */
+function trustGet(uid){try{return Number(localStorage.getItem('nf-trust-'+uid))||0}catch(e){return 0}}
+function trustSet(uid){try{localStorage.setItem('nf-trust-'+uid,String(Date.now()))}catch(e){}}
+function trusted(uid){return Date.now()-trustGet(uid)<DAY30}
+const LINK_URL=()=>location.origin+location.pathname;
+let pushT=0;
+async function doPush(a0,uid,email){
+  const {db,F}=await fb();
+  const ref=F.doc(db,'accounts',uid);
+  const a=JSON.parse(JSON.stringify(a0));a.email=email;
+  const snap=await F.getDoc(ref);
+  if(snap.exists()){
+    let old=null;try{old=JSON.parse(snap.data().json)}catch(e){}
+    if(old){
+      a.redeemed=Array.from(new Set((old.redeemed||[]).concat(a.redeemed||[])));
+      if(old.id)a.id=old.id;
+      if(typeof old.topups==='number'&&(a.topups||0)<old.topups)return old;
+    }
+  }
+  a.u=Date.now();
+  await F.setDoc(ref,{email:email,name:a.name,id:a.id||'',cash:a.cash,since:a.since||0,u:a.u,json:JSON.stringify(a)});
+  return null;
+}
+function syncPush(){
+  clearTimeout(pushT);
+  pushT=setTimeout(async()=>{
+    if(!phone||!acct||!AU)return;
+    try{
+      const keep=await doPush(acct,AU.uid,AU.email||'');
+      if(keep&&phone){acct=keep;accounts[phone]=keep;writeJSON(KEY_ACCTS,accounts);renderView()}
+    }catch(e){}
+  },1200);
+}
+async function pullRemote(uid){
+  const {db,F}=await fb();
+  const snap=await F.getDoc(F.doc(db,'accounts',uid));
+  if(!snap.exists())return null;
+  try{return JSON.parse(snap.data().json)}catch(e){return null}
+}
+async function authOut(k0,a0){
+  clearTimeout(pushT);
+  const u=AU;AU=null;
+  try{if(u&&k0&&a0)await doPush(a0,u.uid,u.email||'')}catch(e){}
+  try{const {auth,A}=await fb();await A.signOut(auth)}catch(e){}
+  accounts={};writeJSON(KEY_ACCTS,accounts);
+}
+async function openAccount(u,fresh){
+  const remote=await pullRemote(u.uid);
+  AU=u;
+  if(remote&&remote.name){accounts[u.uid]=remote;writeJSON(KEY_ACCTS,accounts)}
+  logIn(u.uid,remote&&remote.name?remote.name:(u.displayName||'Trader'));
+  acct.email=u.email||'';saveAcct();
+  show('market');
+  toast((fresh?'Welcome, ':'Welcome back, ')+acct.name.split(' ')[0]+'. Your ID is '+acct.id+'.');
+}
+async function authBoot(){
+  if(/oobCode=/.test(location.search))return;
+  try{
+    const {auth,A}=await fb();
+    const u=await new Promise(res=>{const un=A.onAuthStateChanged(auth,x=>{un();res(x)})});
+    if(u&&u.emailVerified&&trusted(u.uid)){
+      AU=u;
+      if(phone){
+        const r=await pullRemote(u.uid);
+        if(r&&r.name&&(r.u||0)>(acct.u||0)){acct=r;accounts[phone]=r;writeJSON(KEY_ACCTS,accounts);renderView()}
+      }else{try{await openAccount(u,false)}catch(e){}}
+    }else if(phone){
+      phone=null;acct=null;try{localStorage.removeItem(KEY_SESSION)}catch(e){}
+      accounts={};writeJSON(KEY_ACCTS,accounts);show('login');
+    }
+  }catch(e){/* offline: keep the saved session on this phone */}
+}
+
+/* ---------- login screen ---------- */
+(function(){
+  const old=document.querySelector('#loginForm');
+  if(!old||!old.parentNode)return;
+  const oldFine=document.querySelector('#v-login .fine');if(oldFine&&oldFine.remove)oldFine.remove();
+  const form=old.cloneNode(false);old.parentNode.replaceChild(form,old);
+  let mode='in',busy=false,msg='',info='',mailTo='',pend=null,fresh=false;
+  const L=(id,label,attrs,val)=>'<div class="field"><label for="'+id+'">'+label+'</label><input id="'+id+'" '+attrs+(val?' value="'+esc(val)+'"':'')+'></div>';
+  const link=(a,txt)=>'<button type="button" data-a="'+a+'" style="background:none;border:0;padding:6px 0;color:var(--accent);font:inherit;font-weight:600;text-align:left;cursor:pointer">'+txt+'</button>';
+  const EM='type="email" inputmode="email" autocomplete="email" autocapitalize="off" placeholder="you@example.com"';
+  const note=()=>'<p class="formerr" role="alert">'+esc(msg)+'</p>'+(info?'<p class="sub" style="margin:0">'+esc(info)+'</p>':'');
+  let lastMode='';
+  function draw(){
+    const keep={};
+    ['fn','fe','fp'].forEach(id=>{const x=form.querySelector('#'+id);if(x&&x.value)keep[id]=x.value});
+    let h='';
+    if(mode==='in'){
+      h=L('fe','Email',EM)+L('fp','Password','type="password" autocomplete="current-password" placeholder="Your password"')+note()+
+        '<button class="primary" type="submit">Log in</button>'+link('up','New here? Create an account')+link('reset','Forgot password?');
+    }else if(mode==='up'){
+      h=L('fn','Your name','type="text" autocomplete="name" placeholder="e.g. Amina Bello" maxlength="40"')+L('fe','Email',EM)+
+        L('fp','Password','type="password" autocomplete="new-password" placeholder="At least 6 characters"')+note()+
+        '<button class="primary" type="submit">Create account and get ₦20,000</button>'+link('in','I already have an account');
+    }else if(mode==='reset'){
+      h=L('fe','Your email',EM)+note()+'<button class="primary" type="submit">Send reset link</button>'+link('in','Back to log in');
+    }else if(mode==='verify'){
+      h='<p style="margin:0;font-size:17px;font-weight:700">Check your email</p><p class="sub" style="margin:0">We sent a link to <b>'+esc(mailTo)+'</b>. Tap it, then come back here and press the button. If you cannot see it, look in your spam folder.</p>'+
+        note()+'<button class="primary" type="submit">I have confirmed my email</button>'+link('resend','Send the email again')+link('other','Use a different email');
+    }else if(mode==='relink'){
+      h='<p style="margin:0;font-size:17px;font-weight:700">Confirm it is you</p><p class="sub" style="margin:0">This is a new phone, or it has been a month. We sent a link to <b>'+esc(mailTo)+'</b>. Open the link on this phone and you will be signed in. Check spam if you cannot see it.</p>'+
+        note()+link('resend','Send the email again')+link('in','Back to log in');
+    }else if(mode==='finish'){
+      h='<p style="margin:0;font-size:17px;font-weight:700">Almost done</p><p class="sub" style="margin:0">Enter your email to finish confirming it is you.</p>'+L('fe','Email',EM,mailTo)+note()+
+        '<button class="primary" type="submit">Finish</button>';
+    }else{
+      h='<div style="text-align:center;padding:8px 0"><div style="width:56px;height:56px;border-radius:50%;background:var(--up-soft);color:var(--up);display:grid;place-items:center;font-size:30px;font-weight:800;margin:0 auto 12px">✓</div><p style="margin:0;font-size:19px;font-weight:700">Verification completed</p><p class="sub" style="margin:6px 0 0">Your email is confirmed.</p></div>'+note()+
+        '<button class="primary" type="submit">Continue</button>';
+    }
+    form.innerHTML=h;
+    ['fn','fe','fp'].forEach(id=>{if(keep[id]&&(lastMode===mode||id==='fe')){const x=form.querySelector('#'+id);if(x)x.value=keep[id]}});
+    lastMode=mode;
+    const b=form.querySelector('button.primary');if(b)b.disabled=busy;
+  }
+  const ERR={'auth/email-already-in-use':'This email already has an account. Log in instead.','auth/invalid-email':'Enter a valid email address.','auth/weak-password':'Password must be at least 6 characters.','auth/invalid-credential':'Wrong email or password.','auth/wrong-password':'Wrong email or password.','auth/user-not-found':'Wrong email or password.','auth/too-many-requests':'Too many tries. Wait a few minutes and try again.','auth/network-request-failed':'No connection. Check your internet and try again.','auth/invalid-action-code':'This link has expired or was already used. Log in again to get a new one.','auth/expired-action-code':'This link has expired. Log in again to get a new one.'};
+  function fail(e){msg=ERR[(e&&e.code)||'']||'Something went wrong. Try again.'}
+  async function sendLink(A,auth,email){
+    await A.sendSignInLinkToEmail(auth,email,{url:LINK_URL(),handleCodeInApp:true});
+    try{localStorage.setItem('nf-pending-email',email)}catch(e){}
+  }
+  async function submit(){
+    msg='';info='';
+    const {auth,A}=await fb();
+    const el=id=>form.querySelector('#'+id);
+    const v=id=>{const x=el(id);return x?x.value.trim():''};
+    if(mode==='up'){
+      const name=v('fn').replace(/\s+/g,' ');const em=v('fe').toLowerCase();const pw=el('fp').value;
+      if(name.length<2){msg='Enter your name.';return}
+      if(!em){msg='Enter your email.';return}
+      if(pw.length<6){msg='Password must be at least 6 characters.';return}
+      const cred=await A.createUserWithEmailAndPassword(auth,em,pw);
+      await A.updateProfile(cred.user,{displayName:name});
+      await A.sendEmailVerification(cred.user);
+      mailTo=em;fresh=true;mode='verify';
+    }else if(mode==='in'){
+      const em=v('fe').toLowerCase(),pw=el('fp').value;
+      if(!em||!pw){msg='Enter your email and password.';return}
+      const cred=await A.signInWithEmailAndPassword(auth,em,pw);
+      const u=cred.user;mailTo=em;fresh=false;
+      if(!u.emailVerified){try{await A.sendEmailVerification(u)}catch(e){}mode='verify';info='Your email is not confirmed yet. We sent the link again.';return}
+      if(!trusted(u.uid)){
+        const first=!(await pullRemote(u.uid));
+        if(first){trustSet(u.uid);await openAccount(u,true);return}
+        await sendLink(A,auth,em);await A.signOut(auth);mode='relink';return
+      }
+      await openAccount(u,false);
+    }else if(mode==='reset'){
+      const em=v('fe').toLowerCase();if(!em){msg='Enter your email.';return}
+      await A.sendPasswordResetEmail(auth,em);info='If that email has an account, a reset link is on its way.';
+    }else if(mode==='verify'){
+      const u=auth.currentUser;if(!u){mode='in';return}
+      await u.reload();
+      if(!auth.currentUser.emailVerified){msg='Not confirmed yet. Tap the link in the email first.';return}
+      pend=auth.currentUser;trustSet(pend.uid);mode='done';
+    }else if(mode==='finish'){
+      const em=v('fe').toLowerCase();if(!em){msg='Enter your email.';return}
+      const cred=await A.signInWithEmailLink(auth,em,location.href);
+      try{localStorage.removeItem('nf-pending-email')}catch(e){}
+      try{history.replaceState(null,'',location.pathname)}catch(e){}
+      pend=cred.user;fresh=false;trustSet(pend.uid);mode='done';
+    }else{
+      if(!pend){mode='in';return}
+      await openAccount(pend,fresh);
+    }
+  }
+  form.addEventListener('submit',e=>{
+    e.preventDefault();if(busy)return;busy=true;
+    {const b0=form.querySelector('button.primary');if(b0)b0.disabled=true}
+    submit().catch(fail).then(()=>{busy=false;draw()});
+  });
+  form.addEventListener('click',async e=>{
+    const b=e.target.closest('[data-a]');if(!b)return;
+    msg='';info='';const a=b.dataset.a;
+    try{
+      if(a==='resend'){
+        const {auth,A}=await fb();
+        if(mode==='relink')await sendLink(A,auth,mailTo);else await A.sendEmailVerification(auth.currentUser);
+        info='Sent again. Check your inbox and spam.';
+      }else if(a==='other'){
+        const {auth,A}=await fb();await A.signOut(auth);mode='up';
+      }else mode=a;
+    }catch(err){fail(err)}
+    draw();
+  });
+  draw();
+  /* the user opened the sign-in link from the email */
+  if(/oobCode=/.test(location.search)){
+    fb().then(({auth,A})=>{
+      if(A.isSignInWithEmailLink(auth,location.href)){
+        try{mailTo=localStorage.getItem('nf-pending-email')||''}catch(e){}
+        mode='finish';show('login');draw();
+      }
+    }).catch(()=>{});
+  }
+})();
+
+
+/* ---------- start: restore session if there is one ---------- */
+(function(){
+  let p=null;try{p=localStorage.getItem(KEY_SESSION)}catch(e){}
+  if(p&&accounts[p]){phone=p;acct=accounts[p];if(!acct.id)acct.id=uidOf(p);if(!Array.isArray(acct.redeemed))acct.redeemed=[];if(typeof acct.topups!=='number')acct.topups=0;saveAcct();show('market')}
+  else show('login');
+  startLive();
+  authBoot();
+})();
+})();
+</script>
+
+</body>
+</html>
