@@ -1,0 +1,1 @@
+window.NF_PAY_API='https://nf-pay.d4z2t7w68s.workers.dev/';
